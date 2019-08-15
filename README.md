@@ -47,4 +47,3 @@ Dureté
 Résistance étirement
 Résistance compression
 Résistance torsion
-

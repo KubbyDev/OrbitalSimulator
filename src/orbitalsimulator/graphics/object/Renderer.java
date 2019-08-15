@@ -1,17 +1,21 @@
 package orbitalsimulator.graphics.object;
 
+import orbitalsimulator.graphics.Camera;
+import orbitalsimulator.physics.Mobile;
+
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class Renderer {
 
+    public Mobile parentMobile;
     private Model[] models; //List of LODs for this object
     private double[] sqrDistances; //Distance to display each model (squared for performance)
 
     /**
      * Constructs a Renderer for a given list of LODs (Level Of Details)
-     * <br>The HashMap should attribute a Model to a max distance.
+     * <br>The Map should associate a Model to a max distance.
      * <br>When the Renderer will be rendered, it will display the model with the
      * biggest max distance that is smaller than the distance to the camera.
      * <br>Example: { {10, MODEL1}, {50, MODEL2} } will display the MODEL1 up to 10m, then the MODEL2 up to 50m, then nothing
@@ -42,12 +46,12 @@ public class Renderer {
     }
 
     /**
-     * Renders the correct model according to the distance in parameter
-     * THE DISTANCE HAS TO BE SQUARED
+     * Renders the correct model according to the distance between the parent mobile and the camera
      * Displays nothing if the largest max distance is reached
      */
-    public void render(double sqrDistance) {
-        getModel(sqrDistance).render();
+    public void render(Camera camera) {
+        double sqrDistance = camera.position.subtract(parentMobile.position).sqrLength();
+        getModel(sqrDistance).render(parentMobile, camera);
     }
 
     /**

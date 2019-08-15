@@ -1,20 +1,20 @@
 package orbitalsimulator.graphics.object;
 
-import orbitalsimulator.tools.Vector;
+import orbitalsimulator.maths.vector.Vector3;
 
 public class Vertex {
 
-    private Vector position;
+    private Vector3 position;
 
-    public Vertex(Vector position) {
+    public Vertex(Vector3 position) {
         this.position = position;
     }
 
-    public Vector getPosition() {
+    public Vector3 getPosition() {
         return position;
     }
 
-    public void setPosition(Vector position) {
+    public void setPosition(Vector3 position) {
         this.position = position;
     }
 }

@@ -3,6 +3,8 @@ package orbitalsimulator.graphics;
 import orbitalsimulator.Main;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 public class Window {
 
@@ -34,6 +36,8 @@ public class Window {
             throw new RuntimeException("The window couldn't be initialised");
         GLFW.glfwSetWindowPos(windowId, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2);
         GLFW.glfwMakeContextCurrent(windowId);
+        GL.createCapabilities();
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
         GLFW.glfwShowWindow(windowId);
 
         //Closes the window when Main.exit() is called
@@ -44,8 +48,11 @@ public class Window {
      * Updates the window
      */
     public static void update() {
-        GLFW.glfwPollEvents();
+
         GLFW.glfwSwapBuffers(windowId);
+        GL11.glClearColor(0, 0, 0, 1.0f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GLFW.glfwPollEvents();
     }
 
     /**
