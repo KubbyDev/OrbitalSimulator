@@ -16,7 +16,7 @@ public class Camera {
     public Matrix4 projectionMatrix;
 
     public double fov;
-    public double aspect = Window.getWidth() / Window.getHeight();
+    public double aspect = (double) Window.getWidth() / Window.getHeight();
 
     public double near;
     public double far;
@@ -24,10 +24,10 @@ public class Camera {
 
     public Camera() {
 
-        position = Vector3.forward.multiply(2);
-        rotation = Quaternion.fromEulerAngles(0, 0, 45);
+        position = Vector3.forward().multiply(2);
+        rotation = Quaternion.fromEulerAngles(0, 0, 0);
 
-        shader = new Shader();
+        shader = Shader.DEFAULT;
 
         fov = 70;
         near = 0.1;

@@ -21,6 +21,10 @@ public class Scene {
         renderers.remove(mobile.getRenderer());
     }
 
+    public static ArrayList<Mobile> getObjects() {
+        return objects;
+    }
+
     // Cameras ---------------------------------------------------------------------------------------------------------
 
     private static Camera mainCamera;

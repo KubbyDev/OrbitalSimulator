@@ -1,6 +1,7 @@
 package orbitalsimulator.maths.vector;
 
 import orbitalsimulator.maths.Constant;
+import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 
 public class Vector3 {
@@ -17,14 +18,14 @@ public class Vector3 {
         this.z = z;
     }
 
-    public static Vector3 zero =     new Vector3(0, 0, 0);
-    public static Vector3 one =      new Vector3(1, 1, 1);
-    public static Vector3 forward =  new Vector3(0, 0, 1);
-    public static Vector3 backward = new Vector3(0, 0,-1);
-    public static Vector3 right =    new Vector3(1, 0, 0);
-    public static Vector3 left =     new Vector3(-1,0, 0);
-    public static Vector3 up =       new Vector3(0, 1, 0);
-    public static Vector3 down =     new Vector3(0,-1, 0);
+    public static Vector3 zero()     { return new Vector3(0, 0, 0); }
+    public static Vector3 one()      { return new Vector3(1, 1, 1); }
+    public static Vector3 forward()  { return new Vector3(0, 0, 1); }
+    public static Vector3 backward() { return new Vector3(0, 0,-1); }
+    public static Vector3 right()    { return new Vector3(1, 0, 0); }
+    public static Vector3 left()     { return new Vector3(-1,0, 0); }
+    public static Vector3 up()       { return new Vector3(0, 1, 0); }
+    public static Vector3 down()     { return new Vector3(0,-1, 0); }
 
     //Display
     public static void display(Vector3 v) { System.out.println(v.toString()); }
@@ -116,33 +117,17 @@ public class Vector3 {
 
         Vector3 u = new Vector3(q.x, q.y, q.z);
         double s = q.w;
-        double dotUV = Vector3.dot(u,v);
 
         //Rotated Vector3 = 2(u.v)u+(s*s−u.v)v+2s(u^v)
-        return u.multiply(2*dotUV)
-                .add(v.multiply(s*s-dotUV))
+        return u.multiply(2*Vector3.dot(u,v))
+                .add(v.multiply(s*s-u.sqrLength()))
                 .add(Vector3.cross(u,v).multiply(2*s));
     }
     public Vector3 rotate(Quaternion q) { return rotate(this, q); }
 
-    /**Converts a rotation defined by Euler angles (roll, pitch, yaw)
-     * to the same rotation defined by a Quaternion. */
-    public Quaternion toQuaternion() { return Quaternion.fromEulerAngles(x, y, z); }
+    // Other -----------------------------------------------------------------------------------------------------------
 
-    /**Converts a rotation defined by a Quaternion
-     * to the same rotation defined by Euler angles (roll, pitch, yaw) */
-    public static Vector3 fromQuaternion(Quaternion q) {
-
-        double sinr_cosp = 2.0 * (q.w * q.x + q.y * q.z);
-        double cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
-        double sinp = 2.0 * (q.w * q.y - q.z * q.x);
-        double siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
-        double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
-
-        return new Vector3(
-                Math.atan2(sinr_cosp, cosr_cosp),
-                Math.abs(sinp) >= 1 ? ((sinp<0?-1:1)* Constant.PI/2) : Math.asin(sinp),
-                Math.atan2(siny_cosp, cosy_cosp)
-        );
+    public EulerAngles toEulerAngles() {
+        return new EulerAngles(x, y, z);
     }
 }

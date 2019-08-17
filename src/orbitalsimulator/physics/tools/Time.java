@@ -1,4 +1,4 @@
-package orbitalsimulator.physics;
+package orbitalsimulator.physics.tools;
 
 import orbitalsimulator.maths.vector.Vector3;
 
@@ -19,7 +19,5 @@ public class Time {
      * <br>Considers the time interval between frames, the time multiplier
      * <br>and the local space time distortion
      */
-    public static double deltaTime(Vector3 position) {
-        return localSpaceTimeDistortion*multiplier*lastFrameCalcTime;
-    }
+    public static double deltaTime(Vector3 position) { return localSpaceTimeDistortion*multiplier*lastFrameCalcTime; }
 }

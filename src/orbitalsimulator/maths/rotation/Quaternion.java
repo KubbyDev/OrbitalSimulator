@@ -36,9 +36,10 @@ public class Quaternion {
                 b.w*a.z-b.x*a.y+b.y*a.x+b.z*a.w
         );
     }
+    public Quaternion multiply(Quaternion b) { return multiply(this, b); }
 
     //Useful constant quaternions
-    public static final Quaternion identity = new Quaternion(1,0,0,0);
+    public static Quaternion identity() { return new Quaternion(1,0,0,0); }
 
     //Display
     public static void display(Vector3 v) { System.out.println(v.toString()); }
@@ -81,8 +82,8 @@ public class Quaternion {
             sy*cp*cr - cy*sp*sr
         );
     }
-    public static Quaternion fromEulerAngles(Vector3 eulerAngles) { return fromEulerAngles(eulerAngles.x, eulerAngles.y, eulerAngles.z); }
+    public static Quaternion fromEulerAngles(EulerAngles eulerAngles) { return fromEulerAngles(eulerAngles.roll(), eulerAngles.pitch(), eulerAngles.yaw()); }
 
     //Conversion from Quaternion to Euler angles
-    public Vector3 toEulerAngles() { return Vector3.fromQuaternion(this); }
+    public EulerAngles toEulerAngles() { return EulerAngles.fromQuaternion(this); }
 }

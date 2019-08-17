@@ -59,15 +59,6 @@ public class Matrix4 {
     public double get(int x, int y) { return values[y][x]; }
     public Matrix4 set(int x, int y, double value) { values[y][x] = value; return this; }
 
-    public float[] getAll() {
-
-        float[] res = new float[16];
-        for(int y = 0; y < 4; y++)
-            for(int x = 0; x < 4; x++)
-                res[4*y+x] = (float) get(x,y);
-        return res;
-    }
-
     /**
      * Displays a Matrix in the console
      * @param a The matrix
