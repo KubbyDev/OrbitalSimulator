@@ -11,15 +11,15 @@ public class EulerAngles extends Vector3 {
     }
 
     /** @returns The roll (rotation around the forward axis) */
-    public double roll()  { return x; }
+    public double roll()  { return x(); }
     /** @returns The roll (rotation around the right axis) */
-    public double pitch() { return y; }
+    public double pitch() { return y(); }
     /** @returns The roll (rotation around the up axis) */
-    public double yaw()   { return z; }
+    public double yaw()   { return z(); }
 
     /**Converts a rotation defined by Euler angles (roll, pitch, yaw)
      * to the same rotation defined by a Quaternion. */
-    public Quaternion toQuaternion() { return Quaternion.fromEulerAngles(x, y, z); }
+    public Quaternion toQuaternion() { return Quaternion.fromEulerAngles(x(), y(), z()); }
 
     /**Converts a rotation defined by a Quaternion
      * to the same rotation defined by Euler angles (roll, pitch, yaw) */

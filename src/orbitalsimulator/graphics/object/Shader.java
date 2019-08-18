@@ -75,7 +75,7 @@ public class Shader {
     */
 
     public void setUniform(String name, Vector3 value) {
-        GL20.glUniform3f(getUniformLocation(name), (float) value.x, (float) value.y, (float) value.z);
+        GL20.glUniform3f(getUniformLocation(name), (float) value.x(), (float) value.y(), (float) value.z());
     }
 
     public void setUniform(String name, Matrix4 matrix) {

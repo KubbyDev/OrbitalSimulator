@@ -1,6 +1,8 @@
 package orbitalsimulator.graphics.object;
 
 import orbitalsimulator.graphics.Camera;
+import orbitalsimulator.maths.matrix.Matrix;
+import orbitalsimulator.maths.matrix.Matrix3;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.physics.Mobile;
 import org.lwjgl.opengl.GL11;
@@ -31,9 +33,9 @@ public class Model {
         FloatBuffer positionBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
         float[] positionData = new float[vertices.length * 3];
         for (int i = 0; i < vertices.length; i++) {
-            positionData[i * 3] = (float) vertices[i].getPosition().x;
-            positionData[i * 3 + 1] = (float) vertices[i].getPosition().y;
-            positionData[i * 3 + 2] = (float) vertices[i].getPosition().z;
+            positionData[i * 3] = (float) vertices[i].getPosition().x();
+            positionData[i * 3 + 1] = (float) vertices[i].getPosition().y();
+            positionData[i * 3 + 2] = (float) vertices[i].getPosition().z();
         }
         positionBuffer.put(positionData).flip();
 
@@ -90,19 +92,29 @@ public class Model {
 
     private static Matrix4 getTransformationMatrix(Mobile parentMobile) {
 
-        return Matrix4.fromQuaternion(parentMobile.rotation)
-                .multiply(Matrix4.identity
-                        .set(3, 0, parentMobile.position.x)
-                        .set(3, 1, parentMobile.position.y)
-                        .set(3, 2, parentMobile.position.z));
+        return toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation))
+                .multiply(Matrix4.identity()
+                        .set(3, 0, parentMobile.position.x())
+                        .set(3, 1, parentMobile.position.y())
+                        .set(3, 2, parentMobile.position.z()));
     }
 
     private static Matrix4 getViewMatrix(Camera camera) {
 
-        return Matrix4.fromQuaternion(camera.rotation)
-                .multiply(Matrix4.identity
-                    .set(3, 0, -camera.position.x)
-                    .set(3, 1, -camera.position.y)
-                    .set(3, 2, -camera.position.z));
+        return toMatrix4(Matrix3.fromQuaternion(camera.rotation))
+                .multiply(Matrix4.identity()
+                    .set(3, 0, -camera.position.x())
+                    .set(3, 1, -camera.position.y())
+                    .set(3, 2, -camera.position.z()));
+    }
+
+    private static Matrix4 toMatrix4(Matrix3 m) {
+
+        return new Matrix4(
+                m.get(0,0), m.get(1,0), m.get(2,0), 0,
+                m.get(0,1), m.get(1,1), m.get(2,1), 0,
+                m.get(0,2), m.get(1,2), m.get(2,2), 0,
+                         0,          0,          0, 1
+        );
     }
 }
