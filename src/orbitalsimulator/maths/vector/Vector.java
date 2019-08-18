@@ -16,10 +16,11 @@ public class Vector implements Cloneable {
 
     protected double[] values;
 
+    /** Returns the ith value of the Vector */
+    public double get(int index) { return values[index]; }
+
     /** Constructs a Vector from an array of values */
-    public Vector(double[] values) {
-        this.values = values;
-    }
+    public Vector(double... values) { this.values = values; }
 
     /** Constructs a Vector of length length filled with defaultValue */
     public Vector(int length, double defaultValue) {
@@ -28,21 +29,13 @@ public class Vector implements Cloneable {
             for(int i = 0; i < length; i++)
                 values[i] = defaultValue;
     }
-
     /** Constructs a Vector of length length filled with 0 */
-    public Vector(int length) {
-        this(length, 0);
-    }
+    public Vector(int length) { values = new double[length]; }
 
     /** Constructs a Vector of length length filled with 0 */
     public static Vector zero(int length) { return new Vector(length, 0); }
     /** Constructs a Vector of length length filled with 1 */
     public static Vector one (int length) { return new Vector(length, 1); }
-
-    /** Returns the ith value of the Vector */
-    public double get(int index) {
-        return values[index];
-    }
 
     /** Sets the ith value of the vector to the desired value */
     public <T extends Vector> T set(int index, double value) {
@@ -70,58 +63,53 @@ public class Vector implements Cloneable {
                 + ")";
     }
 
-    /** Returns a copy of a */
+    /** Returns a copy of the vector */
     public Vector copy() {
         try {
-            Vector vector = (Vector) clone(); //Calls Object.clone()
+            Vector vector = (Vector) super.clone();
             vector.values = Arrays.copyOf(values, values.length);
             return vector;
         } catch (final CloneNotSupportedException exc) {
             throw new AssertionError("we forgot to implement java.lang.Cloneable", exc);
         }
     }
-    /** @see Vector#copy() */
-    public static Vector copy(Vector a) { return a.copy(); }
 
     // Basic Operations ------------------------------------------------------------------------------------------------
 
     //Addition
-    /**Adds 2 vectors. If the two vectors don't have the same length,
-     * a must be longer or it will crash (a,b,c) + (d,e) = (a+d, b+e, c)
-     * <br> WARNING: This function returns the modified vector a. It does not create
-     * a new Vector but adds the values of b to a. Use copy to get a new Vector */
+    /** Adds 2 vectors. If the two vectors don't have the same length,
+     * a must be longer or it will crash (a,b,c) + (d,e) = (a+d, b+e, c) */
     public static <T extends Vector> T add(T a, T b) {
+        T res = (T) a.copy();
         for(int i = 0; i < b.values.length; i++)
-            a.values[i] += b.values[i];
-        return a;
+            res.values[i] += b.values[i];
+        return res;
     }
     /** @see Vector#add(Vector, Vector) */
-    public <T extends Vector> T add(T b) { return add((T)this, b); }
+    public <T extends Vector> T add(T b) { return T.add((T)this, b); }
 
     //Subtraction
-    /**Subtracts b from a. If the two vectors don't have the same length,
-     * a must be longer or it will crash (a,b,c) - (d,e) = (a-d, b-e, c)
-     * <br> WARNING: This function returns the modified vector a. It does not create
-     * a new Vector but removes the values of b from a. Use copy to get a new Vector */
+    /** Subtracts b from a. If the two vectors don't have the same length,
+     * a must be longer or it will crash (a,b,c) - (d,e) = (a-d, b-e, c) */
     public static <T extends Vector> T subtract(T a, T b) {
+        T res = (T) a.copy();
         for(int i = 0; i < b.values.length; i++)
-            a.values[i] -= b.values[i];
-        return a;
+            res.values[i] -= b.values[i];
+        return res;
     }
     /** @see Vector#subtract(Vector, Vector) */
     public <T extends Vector> T subtract(T b) { return subtract((T)this, b); }
 
     //Multiplication
-    /**Multiplies a by k.
-     * <br> WARNING: This function returns the modified vector a. It does not create
-     * a new Vector but changes the values of a. Use copy to get a new Vector */
+    /** Multiplies a by k. */
     public static <T extends Vector> T multiply(T a, double k) {
-        for(int i = 0; i < a.values.length; i++)
-            a.values[i] *= k;
-        return (T) a;
+        T res = (T) a.copy();
+        for(int i = 0; i < res.values.length; i++)
+            res.values[i] *= k;
+        return res;
     }
     /** @see Vector#multiply(Vector, double) */
-    public <T extends Vector> T multiply(double k) { return multiply((T)this, k); }
+    public <T extends Vector> T multiply(double k) { return T.multiply((T)this, k); }
     /** Multiplies by 1/k
      *  @see Vector#multiply(Vector, double) */
     public static <T extends Vector> T divide(T a, double k) { return multiply(a, 1/k); }
@@ -148,9 +136,7 @@ public class Vector implements Cloneable {
     public double length() { return Math.sqrt(sqrLength(this)); }
 
     //Normalization
-    /** Scales the vector so it has the same direction but a length of 1
-     * <br> WARNING: This function returns the modified vector a. It does not create
-     * a new Vector but changes the values of a. Use copy to get a new Vector */
+    /** Scales the vector so it has the same direction but a length of 1 */
     public static <T extends Vector> T normalize(T a) {
         double length = a.length();
         if(length == 0)
@@ -176,20 +162,32 @@ public class Vector implements Cloneable {
 
     // Others ----------------------------------------------------------------------------------------------------------
 
+    /** Casts this Vector to a Vector2 object */
     public Vector2 vector2() {
+        if(getSize() != 2)
+            throw new ArithmeticException("Cannot cast this vector to Vector2! " + toString());
         return (Vector2) this;
     }
 
+    /** Casts this Vector to a Vector3 object */
     public Vector3 vector3() {
+        if(getSize() != 3)
+            throw new ArithmeticException("Cannot cast this vector to Vector3! " + toString());
         return (Vector3) this;
     }
 
-    public Vector4 vector4() {
-        return (Vector4) this;
+    /** Casts this Vector to a EulerAngles object */
+    public EulerAngles eulerAngles() {
+        if(getSize() != 3)
+            throw new ArithmeticException("Cannot cast this vector to EulerAngles! " + toString());
+        return (EulerAngles) this;
     }
 
-    public EulerAngles toEulerAngles() {
-        return new EulerAngles(0,0,0);
+    /** Casts this Vector to a Quaternion object */
+    public Quaternion quaternion() {
+        if(getSize() != 4)
+            throw new ArithmeticException("Cannot cast this vector to Quaternion! " + toString());
+        return (Quaternion) this;
     }
 
 }

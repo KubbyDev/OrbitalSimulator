@@ -92,7 +92,7 @@ public class Model {
 
     private static Matrix4 getTransformationMatrix(Mobile parentMobile) {
 
-        return toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation))
                 .multiply(Matrix4.identity()
                         .set(3, 0, parentMobile.position.x())
                         .set(3, 1, parentMobile.position.y())
@@ -101,7 +101,7 @@ public class Model {
 
     private static Matrix4 getViewMatrix(Camera camera) {
 
-        return toMatrix4(Matrix3.fromQuaternion(camera.rotation))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation))
                 .multiply(Matrix4.identity()
                     .set(3, 0, -camera.position.x())
                     .set(3, 1, -camera.position.y())

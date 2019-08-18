@@ -19,11 +19,9 @@ public class Vector3 extends Vector {
         super(new double[]{x,y,z});
     }
 
-    /** Construts a Vector3 from an array of values
+    /** Constructs a Vector3 from an array of values
      * The array must contain 3 values or you may have problems*/
-    protected Vector3(double[] values) {
-        super(values);
-    }
+    protected Vector3(double[] values) { super(values); }
 
     /** Constructs a Vector3 filled with defaultValue */
     public Vector3(double defaultValue) {
@@ -54,22 +52,24 @@ public class Vector3 extends Vector {
 
     // Complex operations ----------------------------------------------------------------------------------------------
 
-    //Rotation by a Quaternion
+    /** Returns a new Vector3 equal to v rotated by q */
     public static Vector3 rotate(Vector3 v, Quaternion q) {
 
-        Vector3 u = new Vector3(q.x, q.y, q.z);
-        double s = q.w;
+        Vector3 u = new Vector3(q.x(), q.y(), q.z());
+        double s = q.w();
 
-        //Rotated Vector3 = 2(u.v)u+(s*s−u.v)v+2s(u^v)
+        //Rotated vector = 2(u.v)u+(s*s−u.v)v+2s(u^v)
         return u.multiply(2*Vector3.dot(u,v))
                 .add(v.multiply(s*s-u.sqrLength()))
                 .add(Vector3.cross(u,v).multiply(2*s));
     }
+    /** @see Vector3#rotate(Vector3, Quaternion) */
     public Vector3 rotate(Quaternion q) { return rotate(this, q); }
 
-    // Other -----------------------------------------------------------------------------------------------------------
+    // Others ----------------------------------------------------------------------------------------------------------
 
-    public EulerAngles toEulerAngles() {
+    /** Creates an EulerAngles object from this Vector3 */
+    public EulerAngles eulerAngles() {
         return new EulerAngles(x(), y(), z());
     }
 }

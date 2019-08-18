@@ -38,7 +38,7 @@ public class Mobile {
 
     public void update() {
         position = position.add(velocity.multiply(deltaTime()));
-        rotation = rotation.multiply(angularVelocity.toEulerAngles().multiply(deltaTime()).toEulerAngles().toQuaternion());
+        rotation = rotation.multiply(angularVelocity.toEulerAngles().multiply(deltaTime()).eulerAngles().toQuaternion());
     }
 
     public double deltaTime() {

@@ -6,13 +6,14 @@ import orbitalsimulator.graphics.object.CommonModels;
 import orbitalsimulator.graphics.object.Model;
 import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.maths.Constant;
+import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
+import orbitalsimulator.maths.vector.Vector;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
 import orbitalsimulator.physics.tools.Time;
 
 import java.util.ArrayList;
-
 
 public class Main {
 
@@ -44,8 +45,8 @@ public class Main {
 
         long start = System.nanoTime();
 
-        Scene.getMainCamera().position = Scene.getMainCamera().position.rotate(Quaternion.fromEulerAngles(new Vector3(0,0.002,0).multiply(Constant.TO_RADIANS).toEulerAngles()));
-        Scene.getMainCamera().rotation = Scene.getMainCamera().rotation.multiply(Quaternion.fromEulerAngles(new Vector3(0,-0.002,0).multiply(Constant.TO_RADIANS).toEulerAngles()));
+        Scene.getMainCamera().position = Scene.getMainCamera().position.rotate(new EulerAngles(0,20,0).multiply(Time.lastFrameCalcTime*Constant.TO_RADIANS).eulerAngles().toQuaternion());
+        Scene.getMainCamera().rotation = Scene.getMainCamera().rotation.multiply(new EulerAngles(0,-20,0).multiply(Time.lastFrameCalcTime*Constant.TO_RADIANS).eulerAngles().toQuaternion());
 
         for(Mobile mobile : Scene.getObjects())
             mobile.update();

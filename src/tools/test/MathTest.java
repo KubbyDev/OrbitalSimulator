@@ -12,18 +12,17 @@ public class MathTest {
         Vector3 a = new Vector3(1,2,3);
         a.copy();
 
-        Vector3 b = a.multiply(5).vector3().toEulerAngles();
-        EulerAngles e = b.toEulerAngles();
+        EulerAngles e = a.multiply(5).eulerAngles();
 
         Quaternions();
     }
 
     public static void Quaternions() {
 
-        //System.out.println(new Vector3(90,14,56).multiply(Constant.TO_RADIANS).toEulerAngles().toQuaternion().toEulerAngles().multiply(Constant.TO_DEGREES));
-        //System.out.println(new Vector3(90,14,56).multiply(Constant.TO_RADIANS).toEulerAngles().toQuaternion());
+        System.out.println(new Vector3(90,14,56).multiply(Constant.TO_RADIANS).eulerAngles().toQuaternion().toEulerAngles().multiply(Constant.TO_DEGREES));
+        System.out.println(new Vector3(90,14,56).multiply(Constant.TO_RADIANS).eulerAngles().toQuaternion());
 
-        System.out.println(new Vector3(1,0,0).rotate(Quaternion.fromEulerAngles(0,0,90* Constant.TO_RADIANS).normalize()));
+        System.out.println(new Vector3(1,0,0).rotate(Quaternion.fromEulerAngles(0,0,90* Constant.TO_RADIANS).normalize().quaternion()));
     }
 
 }
