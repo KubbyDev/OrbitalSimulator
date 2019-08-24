@@ -1,7 +1,6 @@
 package orbitalsimulator.graphics.object;
 
-import orbitalsimulator.graphics.Camera;
-import orbitalsimulator.maths.matrix.Matrix;
+import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.maths.matrix.Matrix3;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.physics.Mobile;
@@ -92,7 +91,7 @@ public class Model {
 
     private static Matrix4 getTransformationMatrix(Mobile parentMobile) {
 
-        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation.asQuaternion()))
                 .multiply(Matrix4.identity()
                         .set(3, 0, parentMobile.position.x())
                         .set(3, 1, parentMobile.position.y())
@@ -101,7 +100,7 @@ public class Model {
 
     private static Matrix4 getViewMatrix(Camera camera) {
 
-        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation.asQuaternion()))
                 .multiply(Matrix4.identity()
                     .set(3, 0, -camera.position.x())
                     .set(3, 1, -camera.position.y())

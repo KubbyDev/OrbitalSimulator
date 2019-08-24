@@ -28,21 +28,18 @@ public class Matrix4 extends Matrix {
 
     /** Initialises a Matrix4 filled with default value
      * @param defaultValue the value all the slots will be initialised with */
-    public Matrix4(double defaultValue) {
-        super(4, 4, defaultValue);
-    }
+    public Matrix4(double defaultValue) { super(4, 4, defaultValue); }
     /** Constructs a Matrix4 filled with 0
      * @see Matrix4#Matrix4(double) */
     public Matrix4() { super(4, 4); }
 
     /** @return The identity matrix of size 4 (0 everywhere but 1 on the diagonal) */
     public static Matrix4 identity() {
-
-        Matrix4 res = new Matrix4();
-        for(int i = 0; i < 4; i++)
-            res.values[i][i] = 1;
-
-        return res;
+        return new Matrix4(
+                1,0,0,0,
+                0,1,0,0,
+                0,0,1,0,
+                0,0,0,1);
     }
 
     // Basic Operations ------------------------------------------------------------------------------------------------

@@ -4,11 +4,14 @@ import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 
 import java.util.Arrays;
+import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 
 /**
  * A vector of any size. Defines all the methods common to all vectors (add, multiply, length etc).
  * You can also use this class to represent a vector that doesn't have its own class.
+ * <br><br> All the methods ending with Altering will alter the vector on which you apply them.
+ * If a method does not end with altering, it will create a copy of your parameter, do stuff on it and return it.
  */
 public class Vector implements Cloneable {
 
@@ -47,18 +50,27 @@ public class Vector implements Cloneable {
     public int getSize() { return values.length; }
 
     //Display
-    /** Prints v.toString()
-     * @see Vector#toString() */
-    public static void display(Vector v) { System.out.println(v.toString()); }
-    /** Prints this.toString()
-     * @see Vector#toString() */
-    public void display() { System.out.println(this.toString()); }
-    /** Returns the vector with each value separated by a comma */
-    @Override
-    public String toString() {
+    /** Returns the vector with each value separated by a comma
+     * @param decimals The number of decimals you want to display
+     * (1.285 with 1 decimals => 1.3). null if you don't want any rounding */
+    public String toString(Integer decimals) {
+
+        double multiplier;
+        DoubleFunction<String> convert = Double::toString;
+
+        // If the number of decimals is specified we add the rounding to the mapping function
+        if(decimals != null) {
+            multiplier = Math.pow(10, decimals);
+            convert = value -> {
+                value *= multiplier;
+                value = Math.round(value) / multiplier;
+                return Double.toString(value);
+            };
+        }
+
         return "(" +
                 Arrays.stream(values)
-                        .mapToObj(Double::toString)
+                        .mapToObj(convert)
                         .collect(Collectors.joining(", "))
                 + ")";
     }
@@ -70,81 +82,56 @@ public class Vector implements Cloneable {
             vector.values = Arrays.copyOf(values, values.length);
             return vector;
         } catch (final CloneNotSupportedException exc) {
-            throw new AssertionError("we forgot to implement java.lang.Cloneable", exc);
+            throw new AssertionError("We forgot to implement java.lang.Cloneable", exc);
         }
-    }
+    } //Source: https://stackoverflow.com/questions/57539033/how-do-i-instantiate-a-generic-type
 
     // Basic Operations ------------------------------------------------------------------------------------------------
 
     //Addition
-    /** Adds 2 vectors. If the two vectors don't have the same length,
-     * a must be longer or it will crash (a,b,c) + (d,e) = (a+d, b+e, c) */
-    public static <T extends Vector> T add(T a, T b) {
-        T res = (T) a.copy();
-        for(int i = 0; i < b.values.length; i++)
+
+    /** Adds the values of the second vector on the first one (alters the first vector)
+     * <br>If the vectors are not the same size, a must be longer or it will crash (a,b,c) + (d,e) => (a+d, b+e, c) */
+    public static <T extends Vector> T addAltering(T res, T b) {
+        for (int i = 0; i < b.values.length; i++)
             res.values[i] += b.values[i];
         return res;
     }
-    /** @see Vector#add(Vector, Vector) */
-    public <T extends Vector> T add(T b) { return T.add((T)this, b); }
 
     //Subtraction
-    /** Subtracts b from a. If the two vectors don't have the same length,
-     * a must be longer or it will crash (a,b,c) - (d,e) = (a-d, b-e, c) */
-    public static <T extends Vector> T subtract(T a, T b) {
-        T res = (T) a.copy();
+    /** Subtracts the values of the second vector from the first one (alters the first vector)
+     * <br>If the vectors are not the same size, a must be longer or it will crash (a,b,c) - (d,e) => (a-d, b-e, c) */
+     public static <T extends Vector> T subtractAltering(T res, T b) {
         for(int i = 0; i < b.values.length; i++)
             res.values[i] -= b.values[i];
         return res;
     }
-    /** @see Vector#subtract(Vector, Vector) */
-    public <T extends Vector> T subtract(T b) { return subtract((T)this, b); }
 
     //Multiplication
-    /** Multiplies a by k. */
-    public static <T extends Vector> T multiply(T a, double k) {
-        T res = (T) a.copy();
+    /** Multiplies the values of the vector by k (alters the vector) */
+    public static <T extends Vector> T multiplyAltering(T res, double k) {
         for(int i = 0; i < res.values.length; i++)
             res.values[i] *= k;
         return res;
     }
-    /** @see Vector#multiply(Vector, double) */
-    public <T extends Vector> T multiply(double k) { return T.multiply((T)this, k); }
-    /** Multiplies by 1/k
-     *  @see Vector#multiply(Vector, double) */
-    public static <T extends Vector> T divide(T a, double k) { return multiply(a, 1/k); }
-    /** @see Vector#divide(Vector, double) */
-    public <T extends Vector> T divide(double k) { return multiply((T)this, 1/k); }
-    /** Multiplies by -1
-     *  @see Vector#multiply(Vector, double) */
-    public static <T extends Vector> T negate(T a) { return multiply(a, -1); }
-    /** @see Vector#negate(Vector) */
-    public <T extends Vector> T negate() { return multiply((T)this, -1); }
 
-    /** Returns the length of a squared (Less calculations than returning the length, useful for comparison) */
-    public static double sqrLength(Vector a) {
+    //Length
+    /** Returns the length of v squared (Less calculations than returning the length, useful for comparison) */
+    public static double sqrLength(Vector v) {
         double res = 0;
-        for(int i = 0; i < a.values.length; i++)
-            res += a.values[i]*a.values[i];
+        for(int i = 0; i < v.values.length; i++)
+            res += v.values[i]*v.values[i];
         return res;
     }
-    /** @see Vector#sqrLength(Vector) */
-    public double sqrLength() { return sqrLength(this); }
-    /** Returns the length of the vector */
-    public static double length(Vector a) { return Math.sqrt(sqrLength(a)); }
-    /** @see Vector#length(Vector) */
-    public double length() { return Math.sqrt(sqrLength(this)); }
 
     //Normalization
-    /** Scales the vector so it has the same direction but a length of 1 */
-    public static <T extends Vector> T normalize(T a) {
-        double length = a.length();
+    /** Scales the vector so it has the same direction but a length of 1 (alters the vector) */
+    public static <T extends Vector> T normalizeAltering(T res) {
+        double length = length(res);
         if(length == 0)
             throw new ArithmeticException("Can't normalize a 0 vector");
-        return a.divide(length);
+        return multiplyAltering(res, 1/length);
     }
-    /**@see Vector#normalize(Vector)*/
-    public Vector normalize() { return normalize(this); }
 
     //Dot product
     /** Retuns the dot product of a and b
@@ -157,8 +144,6 @@ public class Vector implements Cloneable {
             res += a.values[i]*b.values[i];
         return res;
     }
-    /** @see Vector#dot(Vector, Vector) */
-    public double dot(Vector b) { return dot(this, b); }
 
     // Others ----------------------------------------------------------------------------------------------------------
 
@@ -190,4 +175,77 @@ public class Vector implements Cloneable {
         return (Quaternion) this;
     }
 
+    // Alternative functions -------------------------------------------------------------------------------------------
+    // These functions are just here to make the developpers life easier
+
+    // Display
+
+    /** Returns this vector as a string without rounding
+     * @see Vector#toString(Integer) */
+    public String toString() { return this.toString(null); }
+    /** Prints v.toString()
+     * @see Vector#toString() */
+    public static void display(Vector v) { System.out.println(v.toString(null)); }
+    /** Prints this.toString()
+     * @see Vector#toString() */
+    public void display() { System.out.println(this.toString(null)); }
+    /** Prints this.toString(nbDecimals)
+     * @see Vector#toString(Integer) */
+    public void display(int nbDecimals) { System.out.println(this.toString(nbDecimals)); }
+
+    // Addition
+    /** @see Vector#addAltering(Vector, Vector) */
+    public <T extends Vector> T addAltering(T b) { return addAltering((T)this, b); }
+    /** Adds 2 vectors. If the two vectors don't have the same length,
+     * a must be longer or it will crash (a,b,c) + (d,e) = (a+d, b+e, c) */
+    public static <T extends Vector> T add(T a, T b) { return addAltering((T)a.copy(), b); }
+    /** @see Vector#add(Vector, Vector) */
+    public <T extends Vector> T add(T b) { return addAltering((T)this.copy(), b); }
+
+    // Subtraction
+    /** @see Vector#subtractAltering(Vector, Vector) */
+    public <T extends Vector> T subtractAltering(T b) { return subtractAltering((T)this, b); }
+    /** Subtracts b from a. If the two vectors don't have the same length,
+     * a must be longer or it will crash (a,b,c) - (d,e) = (a-d, b-e, c) */
+    public static <T extends Vector> T subtract(T a, T b) { return subtractAltering((T)a.copy(), b); }
+    /** @see Vector#subtract(Vector, Vector) */
+    public <T extends Vector> T subtract(T b) { return subtractAltering((T)this.copy(), b); }
+
+    // Multiplication
+    /** @see Vector#multiplyAltering(Vector, double) */
+    public <T extends Vector> T multiplyAltering(double k) { return multiplyAltering((T)this, k); }
+    /** Multiplies a by k. */
+    public static <T extends Vector> T multiply(T a, double k) { return multiplyAltering((T)a.copy(), k); }
+    /** @see Vector#multiply(Vector, double) */
+    public <T extends Vector> T multiply(double k) { return multiplyAltering((T)this.copy(), k); }
+    /** Multiplies by 1/k
+     *  @see Vector#multiply(Vector, double) */
+    public static <T extends Vector> T divide(T a, double k) { return multiplyAltering((T)a.copy(), 1/k); }
+    /** @see Vector#divide(Vector, double) */
+    public <T extends Vector> T divide(double k) { return multiplyAltering((T)this.copy(), 1/k); }
+    /** Multiplies by -1
+     *  @see Vector#multiply(Vector, double) */
+    public static <T extends Vector> T negate(T a) { return multiplyAltering((T)a.copy(), -1); }
+    /** @see Vector#negate(Vector) */
+    public <T extends Vector> T negate() { return multiplyAltering((T)this.copy(), -1); }
+
+    // Length
+    /** @see Vector#sqrLength(Vector) */
+    public double sqrLength() { return sqrLength(this); }
+    /** Returns the length of the vector */
+    public static double length(Vector a) { return Math.sqrt(sqrLength(a)); }
+    /** @see Vector#length(Vector) */
+    public double length() { return Math.sqrt(sqrLength(this)); }
+
+    // Normalization
+    /** @see Vector#normalizeAltering(Vector) */
+    public <T extends Vector> T normalizeAltering() { return normalizeAltering((T)this); }
+    /** Scales the vector so it has the same direction but a length of 1 */
+    public static <T extends Vector> T normalize(T a) { return normalizeAltering((T)a.copy()); }
+    /**@see Vector#normalize(Vector)*/
+    public <T extends Vector> T normalize() { return normalizeAltering((T)this.copy()); }
+
+    // Dot product
+    /** @see Vector#dot(Vector, Vector) */
+    public double dot(Vector b) { return dot(this, b); }
 }

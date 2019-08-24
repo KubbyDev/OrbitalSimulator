@@ -37,12 +37,10 @@ public class Matrix3 extends Matrix {
 
     /** @return The identity matrix of size 3 (0 everywhere but 1 on the diagonal) */
     public static Matrix3 identity() {
-
-        Matrix3 res = new Matrix3();
-        for(int i = 0; i < 3; i++)
-            res.values[i][i] = 1;
-
-        return res;
+        return new Matrix3(
+                1,0,0,
+                0,1,0,
+                0,0,1);
     }
 
     // Basic Operations ------------------------------------------------------------------------------------------------

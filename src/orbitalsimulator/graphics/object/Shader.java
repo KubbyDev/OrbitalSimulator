@@ -91,13 +91,8 @@ public class Shader {
         GL20.glUniformMatrix4fv(getUniformLocation(name), true, buffer);
     }
 
-    public void bind() {
-        GL20.glUseProgram(programID);
-    }
-
-    public void unbind() {
-        GL20.glUseProgram(0);
-    }
+    public void bind() { GL20.glUseProgram(programID); }
+    public void unbind() { GL20.glUseProgram(0); }
 
     public void destroy() {
         GL20.glDetachShader(programID, vertexID);

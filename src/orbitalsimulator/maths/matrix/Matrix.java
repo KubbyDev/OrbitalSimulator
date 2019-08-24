@@ -1,8 +1,5 @@
 package orbitalsimulator.maths.matrix;
 
-import orbitalsimulator.maths.vector.Vector2;
-import orbitalsimulator.maths.vector.Vector3;
-
 /**
  * A matrix of any size
  */
@@ -52,8 +49,7 @@ public class Matrix implements Cloneable {
         return res;
     }
 
-    /** Fills a matrix values array with the specified value
-     * This function, unlike most of the others, alters directly the matrix */
+    /** Fills a matrix values array with the specified value */
     public static void fill(Matrix a, double value) {
 
         int w = a.values[0].length;
@@ -62,8 +58,6 @@ public class Matrix implements Cloneable {
             for(int j = 0; j < w; j++)
                 a.values[i][j] = value;
     }
-    /** @see Matrix#fill(Matrix, double) */
-    public void fill(double value) {  fill(this, value); }
 
     /** @param x The horizontal coordinate
      * @param y The vertical coordinate
@@ -98,11 +92,6 @@ public class Matrix implements Cloneable {
             System.out.println();
         }
     }
-    /** @see Matrix#display(Matrix, Integer) */
-    public void display(int decimals) { display(this, decimals); }
-    /** Displays the matrix in the console
-     * @see Matrix#display(Matrix, Integer) */
-    public void display() { display(this, null); }
 
     /** Returns a copy of the matrix */
     public Matrix copy() {
@@ -112,74 +101,56 @@ public class Matrix implements Cloneable {
             int w = values[0].length;
             int h = values.length;
             for(int i=0; i < h; i++)
-                for(int j=0; j < w; j++)
-                    res.values[i][j] = values[i][j];
+                System.arraycopy(values[i], 0, res.values[i], 0, w);
 
             return res;
         } catch (final CloneNotSupportedException exc) {
-            throw new AssertionError("we forgot to implement java.lang.Cloneable", exc);
+            throw new AssertionError("We forgot to implement java.lang.Cloneable", exc);
         }
-    }
+    } //Source: https://stackoverflow.com/questions/57539033/how-do-i-instantiate-a-generic-type
 
     // Basic Operations ------------------------------------------------------------------------------------------------
 
-    /** Adds 2 matrices */
-    public static <T extends Matrix> T add(T a, T b) {
+    /** Adds the values of the second matrix on the first one (alters the first matrix)
+     * <br>If the matrices are not the same size, a must be bigger or it will crash (a,b,c) + (d,e) => (a+d, b+e, c) */
+    public static <T extends Matrix> T addAltering(T res, T b) {
 
-        if(a.height != b.height || a.width != b.width)
-            throw new ArithmeticException("Can't add matrices with different sizes!");
-
-        int w = a.values[0].length;
-        int h = a.values.length;
-        Matrix res = a.copy();
+        int w = b.values[0].length;
+        int h = b.values.length;
 
         for(int y = 0; y < h; y++)
             for(int x = 0; x < w; x++)
                 res.values[y][x] += b.values[y][x];
 
-        return (T) res;
+        return res;
     }
-    /** @see Matrix#add(Matrix, Matrix) */
-    public Matrix add(Matrix b) { return add(this, b); }
 
-    /** Subtracts the second argument from the first argument (a-b) */
-    public static <T extends Matrix> T subtract(T a, T b) {
+    /** Subtracts the values of the second matrix from the first one (alters the first matrix)
+     * <br>If the matrices are not the same size, a must be bigger or it will crash (a,b,c) - (d,e) => (a-d, b-e, c) */
+    public static <T extends Matrix> T subtractAltering(T res, T b) {
 
-        if(a.height != b.height || a.width != b.width)
-            throw new ArithmeticException("Can't add matrices with different sizes!");
-
-        int w = a.values[0].length;
-        int h = a.values.length;
-        Matrix res = a.copy();
+        int w = b.values[0].length;
+        int h = b.values.length;
 
         for(int y = 0; y < h; y++)
             for(int x = 0; x < w; x++)
                 res.values[y][x] -= b.values[y][x];
 
-        return (T) res;
+        return res;
     }
-    /** Subtracts the parameter matrix from the caller (c-p) */
-    public Matrix subtract(Matrix b) { return subtract(this, b); }
 
-    /** Multiplies every term in the matrix by k */
-    public static <T extends Matrix> T multiply(T a, double k) {
+    /** Multiplies every term in the matrix by k (alters the matrix) */
+    public static <T extends Matrix> T multiplyAltering(T res, double k) {
 
-        int w = a.values[0].length;
-        int h = a.values.length;
-        Matrix res = a.copy();
+        int w = res.values[0].length;
+        int h = res.values.length;
 
         for(int y = 0; y < h; y++)
             for(int x = 0; x < w; x++)
                 res.values[y][x] *= k;
 
-        return (T) res;
+        return res;
     }
-    /** @see Matrix#multiply(Matrix, double) */
-    public Matrix mutliply(double k) { return multiply(this, k); }
-    /** Multiplies every term in the matrix by 1/k */
-    public static Matrix divide(Matrix a, double k) { return multiply(a, 1/k); }
-    /** @see Matrix#divide(Matrix, double) */
-    public Matrix divide(double k) { return multiply(this, 1/k); }
 
     /** Muliplies the first matrix by the second matrix (a*b) */
     public static <T extends Matrix> T multiply(T a, T b) {
@@ -204,12 +175,6 @@ public class Matrix implements Cloneable {
 
         return (T) res;
     }
-    /** Multiplies the caller matrix by the parameter matrix (c*p) */
-    public <T extends Matrix> T multiplyRight(T p) { return multiply((T)this, p); }
-    /** Multiplies the parameter matrix by the caller matrix (p*c) */
-    public <T extends Matrix> T multiplyLeft(T p) { return multiply(p, (T)this); }
-    /** @see Matrix#multiplyRight(Matrix) */
-    public <T extends Matrix> T multiply(T p) { return multiply((T)this, p); }
 
     // Complex Operations ----------------------------------------------------------------------------------------------
 
@@ -228,4 +193,56 @@ public class Matrix implements Cloneable {
             throw new ArithmeticException("Cannot cast this matrix to Matrix4!\n" + toString());
         return (Matrix4) this;
     }
+
+    // Alternative functions -------------------------------------------------------------------------------------------
+    // These functions are just here to make the developpers life easier
+
+    // Fill
+    /** @see Matrix#fill(Matrix, double) */
+    public void fill(double value) {  fill(this, value); }
+
+    // Display
+    /** @see Matrix#display(Matrix, Integer) */
+    public void display(int decimals) { display(this, decimals); }
+    /** Displays the matrix in the console
+     * @see Matrix#display(Matrix, Integer) */
+    public void display() { display(this, null); }
+
+    // Addition
+    /** @see Matrix#addAltering(Matrix, Matrix) */
+    public <T extends Matrix> T addAltering(T b) { return addAltering((T)this, b); }
+    /** Creates a new matrix equal to the sum of a and b
+     * <br>If the matrices are not the same size, a must be bigger or it will crash (a,b,c) + (d,e) => (a+d, b+e, c) */
+    public static <T extends Matrix> T add(T a, T b) { return addAltering((T)a.copy(), b); }
+    /** @see Matrix#add(Matrix, Matrix) */
+    public <T extends Matrix> T add(T b) { return addAltering((T)this.copy(), b); }
+
+    // Subtraction
+    /** @see Matrix#subtractAltering(Matrix, Matrix) */
+    public <T extends Matrix> T subtractAltering(T b) { return subtractAltering((T)this, b); }
+    /** Creates a new matrix equal to the difference of a and b
+     * <br>If the matrices are not the same size, a must be bigger or it will crash (a,b,c) - (d,e) => (a-d, b-e, c) */
+    public static <T extends Matrix> T subtract(T a, T b) { return subtractAltering((T)a.copy(), b); }
+    /** @see Matrix#subtract(Matrix, Matrix) */
+    public <T extends Matrix> T subtract(T b) { return subtractAltering((T)this.copy(), b); }
+
+    // Multiplication by a number
+    /** @see Matrix#multiplyAltering(Matrix, double) */
+    public <T extends Matrix> T multiplyAltering(double k) { return multiplyAltering((T)this, k); }
+    /** Creates a new matrix equal to a times k */
+    public static <T extends Matrix> T multiply(T a, double k) { return multiplyAltering((T)a.copy(), k); }
+    /** @see Matrix#multiply(Matrix, double) */
+    public <T extends Matrix> T mutliply(double k) { return multiplyAltering((T)this.copy(), k); }
+    /** Creates a new matrix equal to a times 1/k */
+    public static <T extends Matrix> T divide(T a, double k) { return multiplyAltering((T)a.copy(), 1/k); }
+    /** @see Matrix#divide(Matrix, double) */
+    public <T extends Matrix> T divide(double k) { return multiplyAltering((T)this.copy(), 1/k); }
+
+    // Multiplication by a Matrix
+    /** Multiplies the caller matrix by the parameter matrix (c*p) */
+    public <T extends Matrix> T multiplyRight(T p) { return multiply((T)this, p); }
+    /** Multiplies the parameter matrix by the caller matrix (p*c) */
+    public <T extends Matrix> T multiplyLeft(T p) { return multiply(p, (T)this); }
+    /** @see Matrix#multiplyRight(Matrix) */
+    public <T extends Matrix> T multiply(T p) { return multiply((T)this, p); }
 }

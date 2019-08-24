@@ -4,6 +4,7 @@ import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.collider.Collider;
 import orbitalsimulator.maths.rotation.Quaternion;
+import orbitalsimulator.maths.rotation.Rotation;
 import orbitalsimulator.physics.tools.Time;
 
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public class Mobile {
     //Physical values
     public Vector3 position;
     public Vector3 velocity;
-    public Quaternion rotation;
-    public Quaternion angularVelocity;
+    public Rotation rotation;
+    public Rotation angularVelocity;
 
     //Modules. The main module is the 0th item
     private ArrayList<Module> modules;
@@ -25,8 +26,8 @@ public class Mobile {
 
         position = Vector3.zero();
         velocity = Vector3.zero();
-        rotation = Quaternion.identity();
-        angularVelocity = Quaternion.fromEulerAngles(0,0,20);
+        rotation = new Rotation(Quaternion.identity());
+        angularVelocity = new Rotation(Quaternion.fromEulerAngles(0,20,0));
 
         this.renderer = renderer;
         this.renderer.parentMobile = this;
@@ -38,10 +39,8 @@ public class Mobile {
 
     public void update() {
         position = position.add(velocity.multiply(deltaTime()));
-        rotation = rotation.multiply(angularVelocity.toEulerAngles().multiply(deltaTime()).eulerAngles().toQuaternion());
+        rotation = rotation.rotate(angularVelocity.copy().scale(deltaTime()));
     }
 
-    public double deltaTime() {
-        return Time.deltaTime(position);
-    }
+    public double deltaTime() { return Time.deltaTime(position); }
 }

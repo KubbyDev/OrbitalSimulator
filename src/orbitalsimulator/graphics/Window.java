@@ -16,9 +16,7 @@ public class Window {
     private static int height = DEFAULT_HEIGHT;
     private static long windowId;
 
-    /**
-     * Open and initialises the Window (should not be called twice)
-     */
+    /** Open and initialises the Window (should not be called twice) */
     public static void open() {
 
         //Library initialisation
@@ -44,9 +42,7 @@ public class Window {
         Main.addOnCloseEvent(Window::close);
     }
 
-    /**
-     * Updates the window
-     */
+    /** Updates the window */
     public static void update() {
 
         GLFW.glfwSwapBuffers(windowId);
@@ -55,16 +51,12 @@ public class Window {
         GLFW.glfwPollEvents();
     }
 
-    /**
-     * Closes the window
-     */
+    /** Closes the window */
     public static void close() {
         GLFW.glfwDestroyWindow(windowId);
     }
 
-    /**
-     * @return True if the user clicked on the window's close button
-     */
+    /** @return True if the user clicked on the window's close button */
     public static boolean closeRequested() {
         return GLFW.glfwWindowShouldClose(windowId);
     }

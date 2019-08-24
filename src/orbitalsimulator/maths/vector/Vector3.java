@@ -2,7 +2,11 @@ package orbitalsimulator.maths.vector;
 
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
+import orbitalsimulator.maths.rotation.Rotation;
 
+/** A Vector limited to 3 values
+ * <br><br> Contains some functions that can be executed only with 3D vectors
+ * @see Vector */
 public class Vector3 extends Vector {
 
     // Base ------------------------------------------------------------------------------------------------------------
@@ -15,26 +19,30 @@ public class Vector3 extends Vector {
     public double z() { return values[2]; }
 
     /** Constructs a Vector3 from the 3 components */
-    public Vector3(double x, double y, double z) {
-        super(new double[]{x,y,z});
-    }
+    public Vector3(double x, double y, double z) { super(x,y,z); }
+
+    /** Constructs a Vector3 filled with defaultValue */
+    public Vector3(double defaultValue) { super(defaultValue, defaultValue, defaultValue); }
 
     /** Constructs a Vector3 from an array of values
      * The array must contain 3 values or you may have problems*/
     protected Vector3(double[] values) { super(values); }
 
-    /** Constructs a Vector3 filled with defaultValue */
-    public Vector3(double defaultValue) {
-        super(new double[]{defaultValue, defaultValue, defaultValue});
-    }
-
+    /** @return a Vector3 filled with 0 */
     public static Vector3 zero()     { return new Vector3(0, 0, 0); }
+    /** @return a Vector3 filled with 1 */
     public static Vector3 one()      { return new Vector3(1, 1, 1); }
+    /** @return the local forward vector */
     public static Vector3 forward()  { return new Vector3(0, 0, 1); }
+    /** @return the local backward vector */
     public static Vector3 backward() { return new Vector3(0, 0,-1); }
+    /** @return the local right vector */
     public static Vector3 right()    { return new Vector3(1, 0, 0); }
+    /** @return the local left vector */
     public static Vector3 left()     { return new Vector3(-1,0, 0); }
+    /** @return the local up vector */
     public static Vector3 up()       { return new Vector3(0, 1, 0); }
+    /** @return the local down vector */
     public static Vector3 down()     { return new Vector3(0,-1, 0); }
 
     // Basic Operations ------------------------------------------------------------------------------------------------
@@ -47,29 +55,44 @@ public class Vector3 extends Vector {
                 a.z() * b.x() - a.x() * b.z(),
                 a.x() * b.y() - a.y() * b.x());
     }
-    /** @see Vector3#cross(Vector3 Vector3) */
-    public Vector3 cross(Vector3 b) { return cross(this, b); }
 
     // Complex operations ----------------------------------------------------------------------------------------------
 
-    /** Returns a new Vector3 equal to v rotated by q */
-    public static Vector3 rotate(Vector3 v, Quaternion q) {
+    /** Rotates this vector by q */
+    public static Vector3 rotateAltering(Vector3 v, Quaternion q) {
 
         Vector3 u = new Vector3(q.x(), q.y(), q.z());
         double s = q.w();
 
-        //Rotated vector = 2(u.v)u+(s*s−u.v)v+2s(u^v)
-        return u.multiply(2*Vector3.dot(u,v))
-                .add(v.multiply(s*s-u.sqrLength()))
-                .add(Vector3.cross(u,v).multiply(2*s));
-    }
-    /** @see Vector3#rotate(Vector3, Quaternion) */
-    public Vector3 rotate(Quaternion q) { return rotate(this, q); }
+        //We calculate it before so we can use altering functions
+        double dot = dot(u,v);
+        Vector3 cross = cross(u,v);
+
+        //Rotated vector = v(s*s−u.u)+2u(u.v)+2s(u^v)
+        return v.multiplyAltering(s*s-u.sqrLength())
+                .addAltering(cross.multiplyAltering(2*s))
+                .addAltering(u.multiplyAltering(2*dot));
+    } //Source: https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
 
     // Others ----------------------------------------------------------------------------------------------------------
 
     /** Creates an EulerAngles object from this Vector3 */
-    public EulerAngles eulerAngles() {
-        return new EulerAngles(x(), y(), z());
-    }
+    public EulerAngles eulerAngles() { return new EulerAngles(x(), y(), z()); }
+
+    // Alternative functions -------------------------------------------------------------------------------------------
+    // These functions are just here to make the developpers life easier
+
+    // Cross product
+    /** @see Vector3#cross(Vector3 Vector3) */
+    public Vector3 cross(Vector3 b) { return cross(this, b); }
+
+    // Rotate
+    /** @see Vector3#rotateAltering(Vector3, Quaternion) */
+    public Vector3 rotateAltering(Quaternion q) { return rotateAltering(this, q); }
+    /** Returns a copy of v rotated by q */
+    public static Vector3 rotate(Vector3 v, Quaternion q) { return rotateAltering(v.copy().vector3(), q); }
+    /** @see Vector3#rotate(Vector3, Quaternion) */
+    public Vector3 rotate(Rotation r) { return rotateAltering(this.copy().vector3(), r.asQuaternion()); }
+    /** @see Vector3#rotate(Vector3, Quaternion) */
+    public Vector3 rotate(Quaternion q) { return rotateAltering(this.copy().vector3(), q); }
 }

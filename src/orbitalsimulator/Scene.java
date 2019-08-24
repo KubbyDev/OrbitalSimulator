@@ -1,6 +1,6 @@
 package orbitalsimulator;
 
-import orbitalsimulator.graphics.Camera;
+import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.physics.Mobile;
 

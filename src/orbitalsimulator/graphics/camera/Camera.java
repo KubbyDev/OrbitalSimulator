@@ -1,19 +1,25 @@
-package orbitalsimulator.graphics;
+package orbitalsimulator.graphics.camera;
 
 import orbitalsimulator.Scene;
+import orbitalsimulator.graphics.Window;
 import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.graphics.object.Shader;
 import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
+import orbitalsimulator.maths.rotation.Rotation;
+
+import java.util.function.Consumer;
 
 public class Camera {
 
     public Vector3 position;
-    public Quaternion rotation;
+    public Rotation rotation;
     public Shader shader;
     public Matrix4 projectionMatrix;
+
+    public Consumer<Camera> cameraMovement = CameraMovement.immobile;
 
     public double fov;
     public double aspect = (double) Window.getWidth() / Window.getHeight();
@@ -22,10 +28,11 @@ public class Camera {
     public double far;
     //            wherever you are
 
-    public Camera() {
+    public Camera() { this(Vector3.zero(), Rotation.fromQuaternion(Quaternion.identity())); }
+    public Camera(Vector3 position, Rotation rotation) {
 
-        position = Vector3.forward().multiply(2);
-        rotation = Quaternion.fromEulerAngles(0, 0, 0);
+        this.position = position;
+        this.rotation = rotation;
 
         shader = Shader.DEFAULT;
 
@@ -49,5 +56,9 @@ public class Camera {
         for(Renderer renderer : Scene.getRenderers())
             renderer.render(this);
 
+    }
+
+    public void update() {
+        cameraMovement.accept(this);
     }
 }

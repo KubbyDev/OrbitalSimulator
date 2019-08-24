@@ -1,16 +1,15 @@
 package orbitalsimulator;
 
-import orbitalsimulator.graphics.Camera;
+import orbitalsimulator.graphics.camera.Camera;
+import orbitalsimulator.graphics.camera.CameraMovement;
 import orbitalsimulator.graphics.Window;
 import orbitalsimulator.graphics.object.CommonModels;
-import orbitalsimulator.graphics.object.Model;
 import orbitalsimulator.graphics.object.Renderer;
-import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.rotation.EulerAngles;
-import orbitalsimulator.maths.rotation.Quaternion;
-import orbitalsimulator.maths.vector.Vector;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
+import orbitalsimulator.physics.Physics;
+import orbitalsimulator.maths.rotation.Rotation;
 import orbitalsimulator.physics.tools.Time;
 
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ public class Main {
     //List of functions that will be called before closing the program
     private static ArrayList<Runnable> onCloseEvents;
     private static boolean closing = false;
+    private static long lastFrameStartTime = System.nanoTime();
 
     /**
      * Initialises the whole program
@@ -30,9 +30,9 @@ public class Main {
         Window.open();
 
         //Temporary test
-        Scene.addMainCamera(new Camera());
-        Model m = CommonModels.cube();
-        Scene.addObject(new Mobile(null, null, Renderer.singleModelRenderer(m)));
+        Scene.addMainCamera(new Camera(Vector3.forward().multiply(2), new Rotation(new EulerAngles(0,0,0))));
+        Scene.addObject(new Mobile(null, null, Renderer.singleModelRenderer(CommonModels.cube())));
+        Scene.getMainCamera().cameraMovement = CameraMovement.rotateAround(Scene.getObjects().get(0), 2, 20);
     }
 
     private static double time = System.currentTimeMillis();
@@ -43,19 +43,20 @@ public class Main {
      */
     public static void update() {
 
-        long start = System.nanoTime();
+        //Saves the calculation time for the next physics update (in seconds)
+        Time.lastFrameCalcTime = (double) (System.nanoTime() - lastFrameStartTime) / 1000000000;
+        lastFrameStartTime = System.nanoTime();
 
-        Scene.getMainCamera().position = Scene.getMainCamera().position.rotate(new EulerAngles(0,20,0).multiply(Time.lastFrameCalcTime*Constant.TO_RADIANS).eulerAngles().toQuaternion());
-        Scene.getMainCamera().rotation = Scene.getMainCamera().rotation.multiply(new EulerAngles(0,-20,0).multiply(Time.lastFrameCalcTime*Constant.TO_RADIANS).eulerAngles().toQuaternion());
+        //Physics update
+        Physics.update();
 
-        for(Mobile mobile : Scene.getObjects())
-            mobile.update();
+        //Camera update (movements)
+        for(Camera cam : Scene.getCameras())
+            cam.update();
 
+        //Screen update
         Scene.getMainCamera().render();
         Window.update();
-
-        //Saves the calculation time for the next physics update (in seconds)
-        Time.lastFrameCalcTime = (double) (System.nanoTime() - start) / 1000000000;
 
         fps++;
         if(System.currentTimeMillis() - time > 1000) {
