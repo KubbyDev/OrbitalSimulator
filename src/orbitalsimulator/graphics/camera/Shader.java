@@ -1,8 +1,9 @@
-package orbitalsimulator.graphics.object;
+package orbitalsimulator.graphics.camera;
 
 import java.nio.FloatBuffer;
 
 import orbitalsimulator.maths.matrix.Matrix4;
+import orbitalsimulator.maths.vector.Vector2;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.tools.FileUtils;
 import org.lwjgl.opengl.GL11;
@@ -17,26 +18,27 @@ public class Shader {
 
     public static final Shader DEFAULT = new Shader();
 
+    /** Creates a Shader with default vertex and default fragment shaders */
     public Shader() { this(DEFAULT_VERTEX_PATH, DEFAULT_FRAGMENT_PATH); }
+    /** Creates a shader with specified vertex shader and fragment shaders */
     public Shader(String vertexPath, String fragmentPath) {
 
         String vertexCode = FileUtils.readAll(vertexPath);
         String fragmentCode = FileUtils.readAll(fragmentPath);
 
         programID = GL20.glCreateProgram();
-        vertexID = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
 
+        // Compiles the Vertex shader
+        vertexID = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
         GL20.glShaderSource(vertexID, vertexCode);
         GL20.glCompileShader(vertexID);
-
         if (GL20.glGetShaderi(vertexID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
             throw new RuntimeException("Vertex Shader: " + GL20.glGetShaderInfoLog(vertexID));
 
+        // Compiles the Fragment shader
         fragmentID = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-
         GL20.glShaderSource(fragmentID, fragmentCode);
         GL20.glCompileShader(fragmentID);
-
         if (GL20.glGetShaderi(fragmentID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
             throw new RuntimeException("Fragment Shader: " + GL20.glGetShaderInfoLog(fragmentID));
 
@@ -52,27 +54,17 @@ public class Shader {
             throw new RuntimeException("Program Validation: " + GL20.glGetProgramInfoLog(programID));
     }
 
-    public int getUniformLocation(String name) {
-        return GL20.glGetUniformLocation(programID, name);
-    }
+    public int getUniformLocation(String name) { return GL20.glGetUniformLocation(programID, name); }
 
-    public void setUniform(String name, float value) {
-        GL20.glUniform1f(getUniformLocation(name), value);
-    }
+    public void setUniform(String name, float value) { GL20.glUniform1f(getUniformLocation(name), value); }
 
-    public void setUniform(String name, int value) {
-        GL20.glUniform1i(getUniformLocation(name), value);
-    }
+    public void setUniform(String name, int value) { GL20.glUniform1i(getUniformLocation(name), value); }
 
-    public void setUniform(String name, boolean value) {
-        GL20.glUniform1i(getUniformLocation(name), value ? 1 : 0);
-    }
+    public void setUniform(String name, boolean value) { GL20.glUniform1i(getUniformLocation(name), value ? 1 : 0); }
 
-    /*
-    public void setUniform(String name, Vector2f value) {
-        GL20.glUniform2f(getUniformLocation(name), value.getX(), value.getY());
+    public void setUniform(String name, Vector2 value) {
+        GL20.glUniform2f(getUniformLocation(name), (float) value.x(), (float) value.y());
     }
-    */
 
     public void setUniform(String name, Vector3 value) {
         GL20.glUniform3f(getUniformLocation(name), (float) value.x(), (float) value.y(), (float) value.z());

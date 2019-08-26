@@ -2,18 +2,16 @@ package orbitalsimulator.maths.matrix;
 
 import orbitalsimulator.maths.rotation.Quaternion;
 
-/**
- * A matrix of 3x3
- */
-public class Matrix3 extends Matrix {
+/** A Matrix limited to 3x3 values
+ * <br><br> Contains some functions that can be executed only with 3x3 matrices
+ * @see SquareMatrix */
+public class Matrix3 extends SquareMatrix {
 
     // Base ------------------------------------------------------------------------------------------------------------
 
     /** Unsafe constructor. Be careful to put 3 lines of length 3 or you might have problems
      * @param values the values */
-    public Matrix3(double[][] values) {
-        super(values);
-    }
+    public Matrix3(double[][] values) { super(values); }
 
     /** Constructs a Matrix3 from the 9 values */
     public Matrix3(double a00, double a01, double a02,
@@ -28,12 +26,10 @@ public class Matrix3 extends Matrix {
 
     /** Initialises a Matrix3 filled with default value
      * @param defaultValue the value all the slots will be initialised with */
-    public Matrix3(double defaultValue) {
-        super(3, 3, defaultValue);
-    }
+    public Matrix3(double defaultValue) { super(3, defaultValue); }
     /** Constructs a Matrix3 filled with 0
      * @see Matrix3#Matrix3(double) */
-    public Matrix3() { super(3, 3); }
+    public Matrix3() { super(3); }
 
     /** @return The identity matrix of size 3 (0 everywhere but 1 on the diagonal) */
     public static Matrix3 identity() {

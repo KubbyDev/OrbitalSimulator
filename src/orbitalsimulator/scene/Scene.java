@@ -1,4 +1,4 @@
-package orbitalsimulator;
+package orbitalsimulator.scene;
 
 import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.object.Renderer;

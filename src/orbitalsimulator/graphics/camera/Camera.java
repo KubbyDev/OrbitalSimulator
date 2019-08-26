@@ -1,9 +1,8 @@
 package orbitalsimulator.graphics.camera;
 
-import orbitalsimulator.Scene;
+import orbitalsimulator.scene.Scene;
 import orbitalsimulator.graphics.Window;
 import orbitalsimulator.graphics.object.Renderer;
-import orbitalsimulator.graphics.object.Shader;
 import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.maths.rotation.Quaternion;

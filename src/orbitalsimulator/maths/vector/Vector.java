@@ -4,15 +4,12 @@ import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 
 import java.util.Arrays;
-import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 
-/**
- * A vector of any size. Defines all the methods common to all vectors (add, multiply, length etc).
- * You can also use this class to represent a vector that doesn't have its own class.
+/** A vector of any size. Defines all the methods common to all vectors (add, multiply, length etc).
+ * You can also use this class to represent a vector with an arbitrary length
  * <br><br> All the methods ending with Altering will alter the vector on which you apply them.
- * If a method does not end with altering, it will create a copy of your parameter, do stuff on it and return it.
- */
+ * If a method does not end with altering, it will create a copy of your parameter, do stuff on it and return it. */
 public class Vector implements Cloneable {
 
     // Base ------------------------------------------------------------------------------------------------------------
@@ -54,37 +51,47 @@ public class Vector implements Cloneable {
      * @param decimals The number of decimals you want to display
      * (1.285 with 1 decimals => 1.3). null if you don't want any rounding */
     public String toString(Integer decimals) {
-
-        double multiplier;
-        DoubleFunction<String> convert = Double::toString;
-
-        // If the number of decimals is specified we add the rounding to the mapping function
-        if(decimals != null) {
-            multiplier = Math.pow(10, decimals);
-            convert = value -> {
-                value *= multiplier;
-                value = Math.round(value) / multiplier;
-                return Double.toString(value);
-            };
-        }
-
         return "(" +
-                Arrays.stream(values)
-                        .mapToObj(convert)
+                Arrays.stream((decimals != null ? this.round(decimals) : this).values)
+                        .mapToObj(Double::toString)
                         .collect(Collectors.joining(", "))
                 + ")";
     }
 
+    //Copy
     /** Returns a copy of the vector */
-    public Vector copy() {
+    public <T extends Vector> T copy() {
         try {
-            Vector vector = (Vector) super.clone();
+            T vector = (T) super.clone();
             vector.values = Arrays.copyOf(values, values.length);
             return vector;
         } catch (final CloneNotSupportedException exc) {
             throw new AssertionError("We forgot to implement java.lang.Cloneable", exc);
         }
     } //Source: https://stackoverflow.com/questions/57539033/how-do-i-instantiate-a-generic-type
+
+    //Equality test
+    /** Tests if the values of the vectors are approximately equal
+     * <br><br> A pair of values is considered equal if their difference is less than the threshold
+     * <br><br> If the vectors don't have the same length, a must be longer or it will crash
+     * (a,b,c) is considered equal to (a,b), not to (a,c)
+     * @param threshold the maximum difference between the values of the vectors */
+    public static boolean equals(Vector a, Vector b, double threshold) {
+        for(int i = 0; i < b.values.length; i++)
+            if(Math.abs(a.values[i] - b.values[i]) > threshold)
+                return false;
+        return true;
+    }
+
+    //Rounding
+    /** Rounds the values of the vector (alters it directly)
+     * @param nbDecimals The number of decimals you want to display (1.285 with 1 decimals => 1.3) */
+    public static <T extends Vector> T roundAltering(T v, int nbDecimals) {
+        double multiplier = Math.pow(10, nbDecimals);
+        for(int i = 0; i < v.values.length; i++)
+            v.values[i] = Math.round(v.values[i]*multiplier)/multiplier;
+        return v;
+    }
 
     // Basic Operations ------------------------------------------------------------------------------------------------
 
@@ -179,9 +186,9 @@ public class Vector implements Cloneable {
     // These functions are just here to make the developpers life easier
 
     // Display
-
     /** Returns this vector as a string without rounding
      * @see Vector#toString(Integer) */
+    @Override
     public String toString() { return this.toString(null); }
     /** Prints v.toString()
      * @see Vector#toString() */
@@ -193,41 +200,58 @@ public class Vector implements Cloneable {
      * @see Vector#toString(Integer) */
     public void display(int nbDecimals) { System.out.println(this.toString(nbDecimals)); }
 
+    // Equality test
+    /** Tests if the values of the vectors are approximately equal
+     * <br><br> If the vectors don't have the same length, a must be longer or it will crash
+     * (a,b,c) is considered equal to (a,b), not to (a,c) */
+    public static boolean equals(Vector a, Vector b) { return equals(a, b, 0); }
+    /** @see Vector#equals(Vector, Vector) */
+    public boolean equals(Vector other) { return equals(this, other, 0); }
+    /** @see Vector#equals(Vector, Vector, double) */
+    public boolean equals(Vector other, double threshold) { return equals(this, other, threshold); }
+
+    // Rounding
+    /** @see Vector#roundAltering(Vector, int) */
+    public <T extends Vector> T roundAltering(int decimals) { return roundAltering((T)this, decimals); }
+    /** Returns a vector with the same values but rounded
+     * @param decimals The number of decimals you want to display (1.285 with 1 decimals => 1.3) */
+    public <T extends Vector> T round(int decimals) { return roundAltering(this.copy(), decimals); }
+
     // Addition
     /** @see Vector#addAltering(Vector, Vector) */
     public <T extends Vector> T addAltering(T b) { return addAltering((T)this, b); }
     /** Adds 2 vectors. If the two vectors don't have the same length,
      * a must be longer or it will crash (a,b,c) + (d,e) = (a+d, b+e, c) */
-    public static <T extends Vector> T add(T a, T b) { return addAltering((T)a.copy(), b); }
+    public static <T extends Vector> T add(T a, T b) { return addAltering(a.copy(), b); }
     /** @see Vector#add(Vector, Vector) */
-    public <T extends Vector> T add(T b) { return addAltering((T)this.copy(), b); }
+    public <T extends Vector> T add(T b) { return addAltering(this.copy(), b); }
 
     // Subtraction
     /** @see Vector#subtractAltering(Vector, Vector) */
     public <T extends Vector> T subtractAltering(T b) { return subtractAltering((T)this, b); }
     /** Subtracts b from a. If the two vectors don't have the same length,
      * a must be longer or it will crash (a,b,c) - (d,e) = (a-d, b-e, c) */
-    public static <T extends Vector> T subtract(T a, T b) { return subtractAltering((T)a.copy(), b); }
+    public static <T extends Vector> T subtract(T a, T b) { return subtractAltering(a.copy(), b); }
     /** @see Vector#subtract(Vector, Vector) */
-    public <T extends Vector> T subtract(T b) { return subtractAltering((T)this.copy(), b); }
+    public <T extends Vector> T subtract(T b) { return subtractAltering(this.copy(), b); }
 
     // Multiplication
     /** @see Vector#multiplyAltering(Vector, double) */
     public <T extends Vector> T multiplyAltering(double k) { return multiplyAltering((T)this, k); }
     /** Multiplies a by k. */
-    public static <T extends Vector> T multiply(T a, double k) { return multiplyAltering((T)a.copy(), k); }
+    public static <T extends Vector> T multiply(T a, double k) { return multiplyAltering(a.copy(), k); }
     /** @see Vector#multiply(Vector, double) */
-    public <T extends Vector> T multiply(double k) { return multiplyAltering((T)this.copy(), k); }
+    public <T extends Vector> T multiply(double k) { return multiplyAltering(this.copy(), k); }
     /** Multiplies by 1/k
      *  @see Vector#multiply(Vector, double) */
-    public static <T extends Vector> T divide(T a, double k) { return multiplyAltering((T)a.copy(), 1/k); }
+    public static <T extends Vector> T divide(T a, double k) { return multiplyAltering(a.copy(), 1/k); }
     /** @see Vector#divide(Vector, double) */
-    public <T extends Vector> T divide(double k) { return multiplyAltering((T)this.copy(), 1/k); }
+    public <T extends Vector> T divide(double k) { return multiplyAltering(this.copy(), 1/k); }
     /** Multiplies by -1
      *  @see Vector#multiply(Vector, double) */
-    public static <T extends Vector> T negate(T a) { return multiplyAltering((T)a.copy(), -1); }
+    public static <T extends Vector> T negate(T a) { return multiplyAltering(a.copy(), -1); }
     /** @see Vector#negate(Vector) */
-    public <T extends Vector> T negate() { return multiplyAltering((T)this.copy(), -1); }
+    public <T extends Vector> T negate() { return multiplyAltering(this.copy(), -1); }
 
     // Length
     /** @see Vector#sqrLength(Vector) */
@@ -241,9 +265,9 @@ public class Vector implements Cloneable {
     /** @see Vector#normalizeAltering(Vector) */
     public <T extends Vector> T normalizeAltering() { return normalizeAltering((T)this); }
     /** Scales the vector so it has the same direction but a length of 1 */
-    public static <T extends Vector> T normalize(T a) { return normalizeAltering((T)a.copy()); }
+    public static <T extends Vector> T normalize(T a) { return normalizeAltering(a.copy()); }
     /**@see Vector#normalize(Vector)*/
-    public <T extends Vector> T normalize() { return normalizeAltering((T)this.copy()); }
+    public <T extends Vector> T normalize() { return normalizeAltering(this.copy()); }
 
     // Dot product
     /** @see Vector#dot(Vector, Vector) */

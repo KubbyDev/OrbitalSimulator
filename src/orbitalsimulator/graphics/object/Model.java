@@ -15,7 +15,7 @@ import java.nio.IntBuffer;
 
 public class Model {
 
-    public static Model EMPTY; //An empty model that can be used for optimization
+    public static Model EMPTY = new Model(new Vertex[0], new int[0]); //An empty model that can be used for optimization
 
     private Vertex[] vertices; //List of all the vertices composing the mesh of the model
     private int[] indices;     //List of the indices of the vertices (order)
@@ -29,6 +29,7 @@ public class Model {
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
 
+        // Vertices positions buffer
         FloatBuffer positionBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
         float[] positionData = new float[vertices.length * 3];
         for (int i = 0; i < vertices.length; i++) {
@@ -37,22 +38,23 @@ public class Model {
             positionData[i * 3 + 2] = (float) vertices[i].getPosition().z();
         }
         positionBuffer.put(positionData).flip();
-
         pbo = storeData(positionBuffer, 0, 3);
 
+        // Faces indices buffer
+        IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
+        indicesBuffer.put(indices).flip();
+
+        // Colors buffer
         FloatBuffer colorBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
         float[] colorData = new float[vertices.length * 3];
         for (int i = 0; i < vertices.length; i++) {
-            colorData[i * 3] = i >= 4 ? 1.0f : 0.0f;
-            colorData[i * 3 + 1] = i == 2 || i == 3 || i == 6 || i == 7 ? 1.0f : 0.0f;
-            colorData[i * 3 + 2] = i%2 == 1 ? 1.0f : 0.0f;
+            int colorIndex = i%8;
+            colorData[i * 3] = colorIndex >= 4 ? 1.0f : 0.0f;
+            colorData[i * 3 + 1] = colorIndex == 2 || colorIndex == 3 || colorIndex == 6 || colorIndex == 7 ? 1.0f : 0.0f;
+            colorData[i * 3 + 2] = colorIndex%2 == 1 ? 1.0f : 0.0f;
         }
         colorBuffer.put(colorData).flip();
-
         cbo = storeData(colorBuffer, 1, 3);
-
-        IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
-        indicesBuffer.put(indices).flip();
 
         ibo = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);

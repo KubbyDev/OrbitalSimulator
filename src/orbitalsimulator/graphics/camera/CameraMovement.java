@@ -17,13 +17,22 @@ public class CameraMovement {
      * @param speed The speed of the rotation is degrees/second */
     public static Consumer<Camera> rotateAround(Mobile pivot, double radius, double speed) {
 
+        //TODO: Faire un truc fiable (actuellement ça marche que si le pivot est immobile)
+        //TODO: Possibilite de choisir l'axe de rotation
+        //TODO: Possibilite de passer une fonction dans speed et radius
+
         //Precalculates the rotations as Quaternions
         Rotation positionRotator = new Rotation(new EulerAngles(speed,0,0,Unit.DEGREES).toQuaternion());
         Rotation rotationRotator = new Rotation(new EulerAngles(-speed,0,0,Unit.DEGREES).toQuaternion());
 
         return (Camera camera) -> {
-            camera.position.rotateAltering(positionRotator.copy().scale(Time.lastFrameCalcTime).asQuaternion()).normalizeAltering().multiplyAltering(radius);
+            camera.position = camera.position.subtractAltering(pivot.position)
+                    .rotateAltering(positionRotator.copy().scale(Time.lastFrameCalcTime).asQuaternion())
+                    .normalizeAltering().multiplyAltering(radius)
+                    .addAltering(pivot.position);
             camera.rotation.rotate(rotationRotator.copy().scale(Time.lastFrameCalcTime));
         };
     }
+
+
 }

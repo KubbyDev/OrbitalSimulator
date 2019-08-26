@@ -1,6 +1,6 @@
 package orbitalsimulator.physics;
 
-import orbitalsimulator.Scene;
+import orbitalsimulator.scene.Scene;
 import orbitalsimulator.physics.tools.Time;
 
 public class Physics {

@@ -1,12 +1,13 @@
 package tools.test;
 
-import orbitalsimulator.tools.FileUtils;
+import orbitalsimulator.maths.vector.*;
+import orbitalsimulator.maths.rotation.*;
+import orbitalsimulator.maths.matrix.*;
+import orbitalsimulator.maths.*;
 
 public class Test {
 
     public static void main(String... args) {
-
-        System.out.println(FileUtils.readAll("models/test.txt"));
 
     }
 
