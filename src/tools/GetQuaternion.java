@@ -10,7 +10,6 @@ public class GetQuaternion {
     /**
      * This class can give you a Quaternion from euler angles (useful if you want to hardcode some rotations)
      */
-
     public static void main(String... args) {
 
         Scanner sc = new Scanner(System.in);

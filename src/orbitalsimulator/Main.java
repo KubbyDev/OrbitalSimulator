@@ -3,38 +3,40 @@ package orbitalsimulator;
 import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.camera.CameraMovement;
 import orbitalsimulator.graphics.Window;
-import orbitalsimulator.graphics.object.CommonModels;
-import orbitalsimulator.graphics.object.ModelSave;
-import orbitalsimulator.graphics.object.Renderer;
-import orbitalsimulator.maths.rotation.EulerAngles;
-import orbitalsimulator.maths.vector.Vector3;
-import orbitalsimulator.physics.Mobile;
 import orbitalsimulator.physics.Physics;
-import orbitalsimulator.maths.rotation.Rotation;
+import orbitalsimulator.physics.module.LightSource;
 import orbitalsimulator.physics.tools.Time;
-import orbitalsimulator.scene.Scene;
+import orbitalsimulator.tools.Input;
+import orbitalsimulator.tools.save.SceneSave;
 
 import java.util.ArrayList;
 
 public class Main {
 
-    //List of functions that will be called before closing the program
-    private static ArrayList<Runnable> onCloseEvents;
-    private static boolean closing = false;
-    private static long lastFrameStartTime = System.nanoTime();
+    private static ArrayList<Runnable> onCloseEvents; //List of functions that will be called before closing the program
+    private static boolean closing = false; //Setting this boolean to true to close the program (But call exit() it's better)
+    private static long lastFrameStartTime; //The moment the frame calculations started (includes phyiscs calculations)
 
     /**
      * Initialises the whole program
      */
     public static void init() {
 
-        onCloseEvents = new ArrayList<Runnable>();
+        onCloseEvents = new ArrayList<>();
         Window.open();
+        Input.Init();
 
-        //Temporary test
-        Scene.addMainCamera(new Camera(Vector3.forward().multiply(2), new Rotation(new EulerAngles(0,0,0))));
-        Scene.addObject(new Mobile(null, null, Renderer.singleModelRenderer(ModelSave.load("TestModel"))));
-        Scene.getMainCamera().cameraMovement = CameraMovement.rotateAround(Scene.getObjects().get(0), 5, 20);
+        //Loads the scene
+        SceneSave.load("TestScene");
+
+        //Sets the camera movement rules
+        Scene.getMainCamera().cameraPositionUpdater = CameraMovement.userControlledAroundMobile(Scene.getMobiles().get(0), 5);
+        Scene.getMainCamera().cameraRotationUpdater = CameraMovement.lockRotationOn(Scene.getMobiles().get(0));
+
+        //Temporary
+        Scene.getMobiles().get(1).addModule(new LightSource(2));
+
+        lastFrameStartTime = System.nanoTime();
     }
 
     private static double time = System.currentTimeMillis();

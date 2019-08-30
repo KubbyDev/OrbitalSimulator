@@ -2,7 +2,30 @@ package orbitalsimulator.graphics.object;
 
 import orbitalsimulator.maths.vector.Vector3;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+
 public class CommonModels {
+
+    // Tools -----------------------------------------------------------------------------------------------------------
+
+    // Gets the list of all the known common models
+    private static HashMap<String, Model> commonModels = getCommonModels();
+
+    // Reads all the fields to load the common models
+    private static HashMap<String, Model> getCommonModels() {
+
+        HashMap<String, Model> res = new HashMap<>();
+        Field[] commonModels = CommonModels.class.getDeclaredFields();
+        for(Field field : commonModels) {
+            try {
+                res.put(field.getName(), (Model) field.get(null));
+            } catch (Exception e) { throw new RuntimeException(e); }
+        }
+        return res;
+    }
+
+    // Models ----------------------------------------------------------------------------------------------------------
 
     public static Model cube =
         new Model(new Vertex[]{
@@ -36,6 +59,5 @@ public class CommonModels {
             4, 5, 6,
             4, 7, 6
         });
-
 
 }

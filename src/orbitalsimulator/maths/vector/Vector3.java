@@ -2,7 +2,6 @@ package orbitalsimulator.maths.vector;
 
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
-import orbitalsimulator.maths.rotation.Rotation;
 
 /** A Vector limited to 3 values
  * <br><br> Contains some functions that can be executed only with 3D vectors
@@ -17,6 +16,21 @@ public class Vector3 extends Vector {
     public double y() { return values[1]; }
     /** Returns the z component of the Vector3 */
     public double z() { return values[2]; }
+    /** Modifies the x value */
+    public <T extends Vector> T setX(double value) {
+        values[0] = value;
+        return (T)this;
+    }
+    /** Modifies the y value */
+    public <T extends Vector> T setY(double value) {
+        values[1] = value;
+        return (T)this;
+    }
+    /** Modifies the z value */
+    public <T extends Vector> T setZ(double value) {
+        values[2] = value;
+        return (T)this;
+    }
 
     /** Constructs a Vector3 from the 3 components */
     public Vector3(double x, double y, double z) { super(x,y,z); }
@@ -33,9 +47,9 @@ public class Vector3 extends Vector {
     /** @return a Vector3 filled with 1 */
     public static Vector3 one()      { return new Vector3(1, 1, 1); }
     /** @return the local forward vector */
-    public static Vector3 forward()  { return new Vector3(0, 0, 1); }
+    public static Vector3 forward()  { return new Vector3(0, 0,-1); }
     /** @return the local backward vector */
-    public static Vector3 backward() { return new Vector3(0, 0,-1); }
+    public static Vector3 backward() { return new Vector3(0, 0, 1); }
     /** @return the local right vector */
     public static Vector3 right()    { return new Vector3(1, 0, 0); }
     /** @return the local left vector */
@@ -91,8 +105,6 @@ public class Vector3 extends Vector {
     public Vector3 rotateAltering(Quaternion q) { return rotateAltering(this, q); }
     /** Returns a copy of v rotated by q */
     public static Vector3 rotate(Vector3 v, Quaternion q) { return rotateAltering(v.copy().vector3(), q); }
-    /** @see Vector3#rotate(Vector3, Quaternion) */
-    public Vector3 rotate(Rotation r) { return rotateAltering(this.copy().vector3(), r.asQuaternion()); }
     /** @see Vector3#rotate(Vector3, Quaternion) */
     public Vector3 rotate(Quaternion q) { return rotateAltering(this.copy().vector3(), q); }
 }

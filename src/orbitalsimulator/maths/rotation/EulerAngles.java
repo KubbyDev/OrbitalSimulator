@@ -21,6 +21,21 @@ public class EulerAngles extends Vector {
     public double pitch() { return values[1]; }
     /** @return The roll (rotation around the forward axis) */
     public double roll()  { return values[2]; }
+    /** Modifies the yaw (rotation around the up axis) */
+    public EulerAngles setYaw(double value) {
+        values[0] = value;
+        return this;
+    }
+    /** Modifies the pitch (rotation around the right axis) */
+    public EulerAngles setPitch(double value) {
+        values[1] = value;
+        return this;
+    }
+    /** Modifies the roll (rotation around the forward axis) */
+    public EulerAngles setRoll(double value) {
+        values[2] = value;
+        return this;
+    }
 
     /** Constructs an EulerAngles rotation from the 3 angles
      * @param yaw rotation around the up axis
@@ -34,7 +49,7 @@ public class EulerAngles extends Vector {
     }
 
     /** Returns the EulerAngles corresponding to no rotation */
-    public EulerAngles zero() { return new EulerAngles(0,0,0); }
+    public static EulerAngles zero() { return new EulerAngles(0,0,0); }
 
     /** Displays the Euler angles in the unit you chose */
     public void display(Unit unit) { (unit == Unit.DEGREES ? multiply(Constant.TO_DEGREES) : this).display(); }

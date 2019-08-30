@@ -1,6 +1,6 @@
 package orbitalsimulator.physics;
 
-import orbitalsimulator.scene.Scene;
+import orbitalsimulator.Scene;
 import orbitalsimulator.physics.tools.Time;
 
 public class Physics {
@@ -8,6 +8,11 @@ public class Physics {
     private static long lastUpdateTime = System.nanoTime();
 
     public static void update() {
+
+        //Saves the lastFramePosition of all the mobiles
+        for (Mobile mobile : Scene.getMobiles())
+            mobile.lastFramePosition = mobile.position;
+
         doOneUpdate();
     }
 
@@ -17,7 +22,7 @@ public class Physics {
         Time.lastPhysicsUpdateCalcTime = (double) (System.nanoTime() - lastUpdateTime) / 1000000000;
         lastUpdateTime = System.nanoTime();
 
-        for (Mobile mobile : Scene.getObjects())
+        for (Mobile mobile : Scene.getMobiles())
             mobile.update();
     }
 }

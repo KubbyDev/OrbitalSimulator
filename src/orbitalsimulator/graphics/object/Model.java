@@ -1,9 +1,11 @@
 package orbitalsimulator.graphics.object;
 
+import orbitalsimulator.Scene;
 import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.maths.matrix.Matrix3;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.physics.Mobile;
+import orbitalsimulator.physics.module.LightSource;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -21,7 +23,11 @@ public class Model {
     private int[] indices;     //List of the indices of the vertices (order)
     private int vao, pbo, ibo, cbo; //Buffer variables useful to the graphics library
 
+    public Model() {}
     public Model(Vertex[] vertices, int[] indices) {
+        init(vertices, indices);
+    }
+    public Model init(Vertex[] vertices, int[] indices) {
 
         this.vertices = vertices;
         this.indices = indices;
@@ -60,6 +66,8 @@ public class Model {
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL15.GL_STATIC_DRAW);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        return this;
     }
 
     private int storeData(FloatBuffer buffer, int index, int size) {
@@ -73,6 +81,11 @@ public class Model {
 
     public void render(Mobile parentMobile, Camera fromCamera) {
 
+        //TODO: Gerer plusieurs sources de lumiere a la fois
+        LightSource lightSource;
+        if(Scene.getLightSources().size() > 0)
+            lightSource = Scene.getLightSources().get(0);
+
         GL30.glBindVertexArray(vao);
         GL30.glEnableVertexAttribArray(0);
         GL30.glEnableVertexAttribArray(1);
@@ -81,7 +94,7 @@ public class Model {
 
         fromCamera.shader.setUniform("model", getTransformationMatrix(parentMobile));
         fromCamera.shader.setUniform("view", getViewMatrix(fromCamera));
-        fromCamera.shader.setUniform("projection", fromCamera.projectionMatrix);
+        fromCamera.shader.setUniform("projection", fromCamera.getProjectionMatrix());
         GL11.glDrawElements(GL11.GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
 
         fromCamera.shader.unbind();
@@ -93,7 +106,7 @@ public class Model {
 
     private static Matrix4 getTransformationMatrix(Mobile parentMobile) {
 
-        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation.asQuaternion()))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(parentMobile.rotation))
                 .multiply(Matrix4.identity()
                         .set(3, 0, parentMobile.position.x())
                         .set(3, 1, parentMobile.position.y())
@@ -102,7 +115,7 @@ public class Model {
 
     private static Matrix4 getViewMatrix(Camera camera) {
 
-        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation.asQuaternion()))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation.toQuaternion().conjugate()))
                 .multiply(Matrix4.identity()
                     .set(3, 0, -camera.position.x())
                     .set(3, 1, -camera.position.y())

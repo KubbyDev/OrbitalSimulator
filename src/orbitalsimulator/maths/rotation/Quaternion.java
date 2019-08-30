@@ -1,6 +1,8 @@
 package orbitalsimulator.maths.rotation;
 
+import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.vector.Vector;
+import orbitalsimulator.maths.vector.Vector3;
 
 public class Quaternion extends Vector {
 
@@ -29,8 +31,6 @@ public class Quaternion extends Vector {
 
     /** Gives the conjugate of q (q.w, -q.x, -q.y, -q.z) */
     public static Quaternion conjugate(Quaternion q) { return new Quaternion(q.w(), -q.x(), -q.y(), -q.z()); }
-    /** @see Quaternion#conjugate(Quaternion) */
-    public Quaternion conjugate() { return conjugate(this); }
 
     /** Multiplies 2 quaternions. Has the effect of composing the rotations
      * @return a*b (Warning: the product of quaternions is NOT commutative) */
@@ -42,10 +42,19 @@ public class Quaternion extends Vector {
                 b.w()*a.z()-b.x()*a.y()+b.y()*a.x()+b.z()*a.w()
         );
     } //Source: https://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
-    /** @see Quaternion#multiply(Quaternion, Quaternion) */
-    public Quaternion multiply(Quaternion b) { return multiply(this, b); }
 
     // Complex Operations ----------------------------------------------------------------------------------------------
+
+    /** Constructs a Quaternion with a rotation befined by an axis and an angle */
+    public Quaternion(Vector3 axis, double angle) {
+        super(4); //Initialises the values array
+        double halfAngle = angle / 2;
+        double s = Math.sin(halfAngle);
+        values[0] = Math.cos(halfAngle);
+        values[1] = axis.x() * s;
+        values[2] = axis.y() * s;
+        values[3] = axis.z() * s;
+    }
 
     /** Converts a rotation defined by Euler angles (yaw, pitch, roll)
      * to the same rotation defined by a Quaternion. */
@@ -65,8 +74,6 @@ public class Quaternion extends Vector {
             cy*cp*sr - sy*sp*cr
         );
     } //Source: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
-    /** @see Quaternion#fromEulerAngles(double, double, double) */
-    public static Quaternion fromEulerAngles(EulerAngles eulerAngles) { return fromEulerAngles(eulerAngles.yaw(), eulerAngles.pitch(), eulerAngles.roll()); }
 
     /** @see EulerAngles#fromQuaternion(Quaternion) */
     public EulerAngles toEulerAngles() { return EulerAngles.fromQuaternion(this); }
@@ -100,4 +107,53 @@ public class Quaternion extends Vector {
     } //Source: https://en.wikipedia.org/wiki/Slerp#Source_code
     public static Quaternion scale(Quaternion q, double alpha) { return slerp(Quaternion.identity(), q, alpha); }
     public Quaternion scale(double alpha) { return slerp(Quaternion.identity(), this, alpha); }
+
+    /** Calculates the angles between a and b
+     * <br> a.rotate(angleBetweenVectors(a,b)) = b */
+    public static Quaternion angleBetweenVectors(Vector3 a, Vector3 b) {
+
+        double norm_u_norm_v = Math.sqrt(a.sqrLength() * b.sqrLength());
+        double real_part = norm_u_norm_v + dot(a, b);
+        Vector3 w;
+
+        // If a and b are exactly opposite, rotate 180 degrees around an arbitrary orthogonal axis.
+        if (real_part < 0.000001 * norm_u_norm_v) {
+            real_part = 0.0;
+            w = Math.abs(a.x()) > Math.abs(a.z()) ? new Vector3(-a.y(), a.x(), 0) : new Vector3(0, -a.z(), a.y());
+        }
+        else
+            w = Vector3.cross(a, b);
+
+        return new Quaternion(real_part, w.x(), w.y(), w.z()).normalizeAltering();
+    } //Source: http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
+
+    public static Quaternion lookAt(Vector3 from, Vector3 to) {
+
+        Vector3 forwardVector = to.subtract(from).normalizeAltering();
+        double dot = Vector3.dot(Vector3.forward(), forwardVector);
+
+        if (Math.abs(dot +1) < 0.000001)
+            return new Quaternion(Constant.PI, Vector3.up().x(), Vector3.up().y(), Vector3.up().z());
+        if (Math.abs(dot -1) < 0.000001)
+            return Quaternion.identity();
+
+        double rotAngle = Math.acos(dot);
+        Vector3 rotAxis = Vector3.cross(Vector3.forward(), forwardVector);
+        return new Quaternion(rotAxis.normalizeAltering(), rotAngle);
+    } //Source: https://stackoverflow.com/questions/12435671/quaternion-lookat-function
+
+    // Alternative functions -------------------------------------------------------------------------------------------
+    // These functions are just here to make the developpers life easier
+
+    // Conjugate
+    /** @see Quaternion#conjugate(Quaternion) */
+    public Quaternion conjugate() { return conjugate(this); }
+
+    // Multiplication
+    /** @see Quaternion#multiply(Quaternion, Quaternion) */
+    public Quaternion multiply(Quaternion b) { return multiply(this, b); }
+
+    // From Euler angles
+    /** @see Quaternion#fromEulerAngles(double, double, double) */
+    public static Quaternion fromEulerAngles(EulerAngles eulerAngles) { return fromEulerAngles(eulerAngles.yaw(), eulerAngles.pitch(), eulerAngles.roll()); }
 }

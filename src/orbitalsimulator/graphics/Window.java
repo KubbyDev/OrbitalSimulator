@@ -63,4 +63,5 @@ public class Window {
 
     public static int getWidth() { return width; }
     public static int getHeight() { return height; }
+    public static long getId() { return windowId; }
 }
