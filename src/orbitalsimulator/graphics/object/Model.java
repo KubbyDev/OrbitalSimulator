@@ -115,7 +115,7 @@ public class Model {
 
     private static Matrix4 getViewMatrix(Camera camera) {
 
-        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation.toQuaternion().conjugate()))
+        return (Matrix4) toMatrix4(Matrix3.fromQuaternion(camera.rotation.conjugate()))
                 .multiply(Matrix4.identity()
                     .set(3, 0, -camera.position.x())
                     .set(3, 1, -camera.position.y())

@@ -35,13 +35,13 @@ public class SceneSave {
                 //Position
                 Vector3 position = new Vector3(Double.parseDouble(words[2]), Double.parseDouble(words[3]), Double.parseDouble(words[4]));
                 //Rotation
-                EulerAngles rotation = new EulerAngles(Double.parseDouble(words[2]), Double.parseDouble(words[3]), Double.parseDouble(words[4]));
+                Quaternion rotation = new EulerAngles(Double.parseDouble(words[2]), Double.parseDouble(words[3]), Double.parseDouble(words[4])).toQuaternion();
 
                 Object element = FileUtils.loadElement(type, path);
                 if(type.equals("Camera"))
                     Scene.addCamera((Camera) element, position, rotation);
                 if(type.equals("Mobile"))
-                    Scene.addMobile((Mobile) element, position, rotation.toQuaternion());
+                    Scene.addMobile((Mobile) element, position, rotation);
             }
 
         } catch (Exception e) { throw new RuntimeException(e); }

@@ -3,6 +3,7 @@ package orbitalsimulator.maths.vector;
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 
+import java.security.spec.ECField;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -129,6 +130,10 @@ public class Vector implements Cloneable {
         for(int i = 0; i < v.values.length; i++)
             res += v.values[i]*v.values[i];
         return res;
+    }
+    /** Sets the length of the Vector (normalizes then multiplies) */
+    public static <T extends Vector> T setLengthAltering(T a, double newLength) {
+        return normalizeAltering(a).multiplyAltering(newLength);
     }
 
     //Normalization
@@ -260,6 +265,12 @@ public class Vector implements Cloneable {
     public static double length(Vector a) { return Math.sqrt(sqrLength(a)); }
     /** @see Vector#length(Vector) */
     public double length() { return Math.sqrt(sqrLength(this)); }
+    /** Sets the length of the Vector (normalizes then multiplies) */
+    public static <T extends Vector> T setLength(T a, double newLength) { return setLengthAltering(a.copy(), newLength); }
+    /** @see Vector#setLengthAltering(Vector, double) */
+    public <T extends Vector> T setLengthAltering(double newLength) { return setLengthAltering((T)this, newLength); }
+    /** @see Vector#setLength(Vector, double) */
+    public <T extends Vector> T setLength(double newLength) { return setLengthAltering(this.copy(), newLength); }
 
     // Normalization
     /** @see Vector#normalizeAltering(Vector) */

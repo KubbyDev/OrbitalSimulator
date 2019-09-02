@@ -5,7 +5,7 @@ import orbitalsimulator.graphics.Window;
 import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.matrix.Matrix4;
-import orbitalsimulator.maths.rotation.EulerAngles;
+import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
 
 import java.util.function.Consumer;
@@ -17,7 +17,7 @@ public class Camera {
     public static final double DEFAULT_FOV = 70;
 
     public Vector3 position;
-    public EulerAngles rotation;
+    public Quaternion rotation;
     public Shader shader;
 
     /** Use this function to control the camera position.
@@ -35,16 +35,16 @@ public class Camera {
     private Matrix4 projectionMatrix;
 
     /** Constructs a Camera with default settings */
-    public Camera() { this(Vector3.zero(), EulerAngles.zero()); }
+    public Camera() { this(Vector3.zero(), Quaternion.identity()); }
     /** Constructs a Camera at the given position and with the given rotation with default settings */
-    public Camera(Vector3 position, EulerAngles rotation) {
+    public Camera(Vector3 position, Quaternion rotation) {
 
         this.position = position;
         this.rotation = rotation;
 
         shader = Shader.DEFAULT;
-        cameraPositionUpdater = CameraMovement.immobile;
-        cameraRotationUpdater = CameraMovement.immobile;
+        cameraPositionUpdater = CameraMovement.immobile();
+        cameraRotationUpdater = CameraMovement.immobile();
         double fov = DEFAULT_FOV;
         double near = DEFAULT_NEAR;
         double far = DEFAULT_FAR;
@@ -72,8 +72,10 @@ public class Camera {
      * @see Camera#cameraRotationUpdater */
     public void update() {
         cameraPositionUpdater.accept(this);
+
+
+
         cameraRotationUpdater.accept(this);
-        rotation.setRoll(0);
     }
 
     /** @return the projection matrix of this camera. Used during render */

@@ -45,7 +45,7 @@ public class Scene {
     private static ArrayList<Camera> cameras = new ArrayList<Camera>();
 
     /** Adds a camera to the scene */
-    public static void addCamera(Camera camera, Vector3 position, EulerAngles rotation) {
+    public static void addCamera(Camera camera, Vector3 position, Quaternion rotation) {
         camera.position = position;
         camera.rotation = rotation;
         addCamera(camera);

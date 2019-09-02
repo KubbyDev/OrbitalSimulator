@@ -3,6 +3,8 @@ package orbitalsimulator;
 import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.camera.CameraMovement;
 import orbitalsimulator.graphics.Window;
+import orbitalsimulator.maths.rotation.EulerAngles;
+import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Physics;
 import orbitalsimulator.physics.module.LightSource;
 import orbitalsimulator.physics.tools.Time;
@@ -30,11 +32,14 @@ public class Main {
         SceneSave.load("TestScene");
 
         //Sets the camera movement rules
-        Scene.getMainCamera().cameraPositionUpdater = CameraMovement.userControlledAroundMobile(Scene.getMobiles().get(0), 5);
+        //Scene.getMainCamera().cameraPositionUpdater = CameraMovement.userControlledAroundMobile(Scene.getMobiles().get(0), 5);
+        Scene.getMainCamera().cameraPositionUpdater = CameraMovement.rotateAround(Scene.getMobiles().get(0), 5, Vector3.right().addAltering(Vector3.backward()).normalize(), 2, Vector3.zero());
         Scene.getMainCamera().cameraRotationUpdater = CameraMovement.lockRotationOn(Scene.getMobiles().get(0));
+        //Scene.getMainCamera().cameraRotationUpdater = CameraMovement.userControlledRotation();
 
         //Temporary
         Scene.getMobiles().get(1).addModule(new LightSource(2));
+        //Scene.getMobiles().get(0).angularVelocity = new EulerAngles(0,20,0).toQuaternion();
 
         lastFrameStartTime = System.nanoTime();
     }

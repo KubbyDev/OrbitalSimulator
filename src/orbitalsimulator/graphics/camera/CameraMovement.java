@@ -1,5 +1,6 @@
 package orbitalsimulator.graphics.camera;
 
+import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.Unit;
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
@@ -15,26 +16,45 @@ import java.util.function.Consumer;
 public class CameraMovement {
 
     /** Does nothing. <br> Can be used as cameraPositionUpdater or as CameraRotationUpdater */
-    public static Consumer<Camera> immobile = (Camera) -> {};
+    public static Consumer<Camera> immobile() { return (Camera) -> {}; }
 
     // Position updaters -----------------------------------------------------------------------------------------------
 
-    /** A cameraPositionUpdater that will make the camera rotate around a mobile
+    /** A cameraPositionUpdater that will make the camera rotate around a mobile (rotation around the Y axis)
      * @param pivot The mobile around which the Camera is supposed to turn
      * @param radius The distance the camera will keep with the pivot
      * @param speed The speed of the rotation is degrees/second */
     public static Consumer<Camera> rotateAround(Mobile pivot, double radius, double speed) {
-
-        //TODO: Possibilite de choisir l'axe de rotation
-
-        //Precalculates the rotation as a Quaternion
-        Quaternion rot = new EulerAngles(speed,0,0,Unit.DEGREES).toQuaternion();
-
+        //This function is a simplyfied version of the one bellow
         return (Camera camera) -> {
-            camera.position.addAltering(pivot.position.subtract(pivot.lastFramePosition))
-                    .subtractAltering(pivot.position)
-                    .rotateAltering(rot.scale(Time.lastFrameCalcTime))
+            camera.position.subtractAltering(pivot.lastFramePosition)
+                    .addAltering(Vector3.right().multiplyAltering(Time.lastFrameCalcTime * speed))
                     .normalizeAltering().multiplyAltering(radius)
+                    .addAltering(pivot.position);
+        };
+    }
+    /** A cameraPositionUpdater that will make the camera rotate around a mobile around an axis (in local coordinates)
+     * WARNING: The axis must not be collinear with the vector from the pivot to the camera
+     * @param pivot The mobile around which the Camera is supposed to turn
+     * @param radius The distance the camera will keep with the pivot
+     * @param axis The axis of the rotation (in global coordinates)
+     * @param speed The speed of the rotation is degrees/second
+     * @param offset The offset of the center of the rotation from the center of the mobile*/
+    public static Consumer<Camera> rotateAround(Mobile pivot, double radius, Vector3 axis, double speed, Vector3 offset) {
+        /* How this function works:
+           First, we want a vector from the center of rotation to the camera
+           This vector is obtained by this: cameraPos - pivotPos - offset
+           + (pivotPos - pivotPosLastFrame) //Movement of the pivot during last frame
+           Then we need to apply a rotation. The rotation is applied to the right around the rotation axis
+           By taking the cross product of the axis by rotCenterToCamera, we will get a vector in the direction of
+           the rotation. We add this vector to the rotCenterToCamera and then set its length to radius to get a rotation effect
+           We then add the new pivot position and the offset and voila !
+         */
+        return (Camera camera) -> {
+            Vector3 rotCenterToCamera = camera.position.subtractAltering(pivot.lastFramePosition).subtractAltering(offset);
+            camera.position.addAltering(Vector3.cross(axis.rotate(pivot.rotation), rotCenterToCamera).setLengthAltering(Time.lastFrameCalcTime * speed))
+                    .normalizeAltering().multiplyAltering(radius)
+                    .addAltering(offset)
                     .addAltering(pivot.position);
         };
     }
@@ -44,42 +64,52 @@ public class CameraMovement {
         return (Camera camera) -> camera.position.addAltering(speed.multiply(Time.lastFrameCalcTime));
     }
 
-    public static Consumer<Camera> userControlledAroundMobile(Mobile pivot, double distance) {
+    /** A cameraPositionUpdater that will let the user rotate around a Mobile freely with his mouse */
+    /*public static Consumer<Camera> userControlledAroundMobile(Mobile pivot, double distance) {
         return (Camera camera) -> {
             Vector2 movementInput = Input.getMouseMovement();
             if(!movementInput.equals(Vector2.zero(), 0.01)) {
+                Vector3 localUp =
+
                 Vector3 localSpaceInput = new Vector3(-movementInput.x(), movementInput.y(), 0);
-                localSpaceInput.normalizeAltering().multiplyAltering(Time.lastFrameCalcTime * 20.0);
+                localSpaceInput.multiplyAltering(Time.lastFrameCalcTime * 2.0);
                 camera.position.addAltering(pivot.position.subtract(pivot.lastFramePosition))
                         .subtractAltering(pivot.position)
-                        .addAltering(localSpaceInput.rotateAltering(camera.rotation.toQuaternion()))
+                        .addAltering(localSpaceInput.rotateAltering(camera.rotation))
                         .normalizeAltering().multiplyAltering(distance)
                         .addAltering(pivot.position);
             }
         };
-    }
+    }*/
 
+    /** A cameraPositionUpdater that will let the user move freely with his input keys (ZQSD) */
     public static Consumer<Camera> userControlledMovements() {
         return (Camera camera) -> {
             Vector2 movementInput = Input.getMovementInput();
             if(!movementInput.equals(Vector2.zero(), 0.01)) {
                 Vector3 localSpaceInput = new Vector3(movementInput.x(), 0, movementInput.y());
                 localSpaceInput.multiplyAltering(Time.lastFrameCalcTime * 5.0);
-                camera.position.addAltering(localSpaceInput.rotateAltering(camera.rotation.toQuaternion()));
+                camera.position.addAltering(localSpaceInput.rotateAltering(camera.rotation));
             }
         };
     }
 
     // Rotation updaters -----------------------------------------------------------------------------------------------
 
+    /** A cameraRotationUpdater that will Lock the camera on a mobile */
     public static Consumer<Camera> lockRotationOn(Mobile target) {
-        return (Camera camera) -> camera.rotation = Quaternion.lookAt(camera.position, target.position).toEulerAngles();
+        return (Camera camera) -> camera.rotation = Quaternion.lookAt(camera.position, target.position);
+        //.toEulerAngles().setRoll(0).toQuaternion();
     }
 
+    /** A cameraRotationUpdater that will let the user control his camera freely */
     public static Consumer<Camera> userControlledRotation() {
         return (Camera camera) -> {
           Vector2 mouseInput = Input.getMouseMovement();
-          camera.rotation.addAltering(new Vector(-mouseInput.x(), -mouseInput.y(), 0).multiplyAltering(0.5 * Time.lastFrameCalcTime));
+          camera.rotation = camera.rotation.multiply(
+                  new EulerAngles(-mouseInput.x(), -mouseInput.y(), 0)
+                          .multiplyAltering(0.5 * Time.lastFrameCalcTime)
+                          .eulerAngles().toQuaternion());
         };
     }
 }

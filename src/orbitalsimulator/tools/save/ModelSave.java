@@ -15,7 +15,10 @@ public class ModelSave {
      * @see ModelSave#parse(String)  */
     public static Model parse(Model model, String data) {
 
-        ArrayList<Vertex> vertices = new ArrayList<>();
+        ArrayList<String> registeredVertices = new ArrayList<>();
+
+        ArrayList<Vector3> vertexPositions = new ArrayList<>();
+        ArrayList<Vector3> vertexNormals = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
 
         // For each line of the data
@@ -23,12 +26,15 @@ public class ModelSave {
 
             String[] words = line.split(" ");
 
-            // Vertex data (position). Looks like this: v 0.427311 -3.825649 -0.427268
+            // Vertex position. Looks like this: v 0.427311 -3.825649 -0.427268
             if(words[0].equals("v"))
-                vertices.add(new Vertex(new Vector3(Double.parseDouble(words[1]), Double.parseDouble(words[2]), Double.parseDouble(words[3]))));
+                vertexPositions.add(new Vector3(Double.parseDouble(words[1]), Double.parseDouble(words[2]), Double.parseDouble(words[3])));
 
-            // Face data (indices of the vertices). Looks like this: f 6//3 8//3 5//3
-            // The first number is the index of the vertex, the second is TODO (idk)
+            // Vertex normal. Looks like this: vn 0.427311 -3.825649 -0.427268
+            if(words[0].equals("vn"))
+                vertexNormals.add(new Vector3(Double.parseDouble(words[1]), Double.parseDouble(words[2]), Double.parseDouble(words[3])));
+
+            // Face data (indices of the vertices). Looks like this: f I/T/N I/T/N I/T/N (index, texture, normal)
             if(words[0].equals("f")) {
                 indices.add(Integer.parseInt(words[1].split("/")[0]) - 1);
                 indices.add(Integer.parseInt(words[2].split("/")[0]) - 1);
@@ -37,9 +43,9 @@ public class ModelSave {
         }
 
         // Conversion to array
-        Vertex[] verticesArray = new Vertex[vertices.size()];
+        Vertex[] verticesArray = new Vertex[vertexPositions.size()];
         for(int i = 0; i < verticesArray.length; i++)
-            verticesArray[i] = vertices.get(i);
+            verticesArray[i] = new Vertex(vertexPositions.get(i), vertexNormals.get(i));
         int[] indicesArray = new int[indices.size()];
         for(int i = 0; i < indicesArray.length; i++)
             indicesArray[i] = indices.get(i);
