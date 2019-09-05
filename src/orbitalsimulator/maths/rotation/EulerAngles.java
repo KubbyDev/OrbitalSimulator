@@ -45,7 +45,8 @@ public class EulerAngles extends Vector {
     /** @see EulerAngles#EulerAngles(double, double, double) */
     public EulerAngles(double yaw, double pitch, double roll, Unit unit) {
         super(yaw, pitch, roll);
-        this.multiplyAltering(unit == Unit.DEGREES ? Constant.TO_RADIANS : 1);
+        if(unit == Unit.DEGREES)
+            this.multiplyAltering(Constant.TO_RADIANS);
     }
 
     /** Returns the EulerAngles corresponding to no rotation */

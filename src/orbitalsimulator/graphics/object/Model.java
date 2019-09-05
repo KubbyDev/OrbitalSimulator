@@ -21,12 +21,10 @@ public class Model {
 
     private Vertex[] vertices; //List of all the vertices composing the mesh of the model
     private int[] indices;     //List of the indices of the vertices (order)
-    private int vao, pbo, ibo, cbo; //Buffer variables useful to the graphics library
+    private int vao, ibo; //Buffer variables useful to the graphics library
 
     public Model() {}
-    public Model(Vertex[] vertices, int[] indices) {
-        init(vertices, indices);
-    }
+    public Model(Vertex[] vertices, int[] indices) { init(vertices, indices); }
     public Model init(Vertex[] vertices, int[] indices) {
 
         this.vertices = vertices;
@@ -44,11 +42,7 @@ public class Model {
             positionData[i * 3 + 2] = (float) vertices[i].getPosition().z();
         }
         positionBuffer.put(positionData).flip();
-        pbo = storeData(positionBuffer, 0, 3);
-
-        // Faces indices buffer
-        IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
-        indicesBuffer.put(indices).flip();
+        storeData(positionBuffer, 0, 3);
 
         // Colors buffer
         FloatBuffer colorBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
@@ -60,7 +54,22 @@ public class Model {
             colorData[i * 3 + 2] = colorIndex%2 == 1 ? 1.0f : 0.0f;
         }
         colorBuffer.put(colorData).flip();
-        cbo = storeData(colorBuffer, 1, 3);
+        storeData(colorBuffer, 1, 3);
+
+        // Vertices normals buffer
+        FloatBuffer normalBuffer = MemoryUtil.memAllocFloat(vertices.length * 3);
+        float[] normalData = new float[vertices.length * 3];
+        for (int i = 0; i < vertices.length; i++) {
+            normalData[i * 3] = (float) vertices[i].getNormal().x();
+            normalData[i * 3 + 1] = (float) vertices[i].getNormal().y();
+            normalData[i * 3 + 2] = (float) vertices[i].getNormal().z();
+        }
+        normalBuffer.put(normalData).flip();
+        storeData(normalBuffer, 2, 3);
+
+        // Faces indices buffer
+        IntBuffer indicesBuffer = MemoryUtil.memAllocInt(indices.length);
+        indicesBuffer.put(indices).flip();
 
         ibo = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -70,37 +79,42 @@ public class Model {
         return this;
     }
 
-    private int storeData(FloatBuffer buffer, int index, int size) {
+    private void storeData(FloatBuffer buffer, int index, int size) {
         int bufferID = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, bufferID);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(index, size, GL11.GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-        return bufferID;
     }
 
     public void render(Mobile parentMobile, Camera fromCamera) {
 
         //TODO: Gerer plusieurs sources de lumiere a la fois
-        LightSource lightSource;
-        if(Scene.getLightSources().size() > 0)
-            lightSource = Scene.getLightSources().get(0);
+        //LightSource lightSource; if(Scene.getLightSources().size() > 0)
+        LightSource lightSource = Scene.getLightSources().get(0);
 
         GL30.glBindVertexArray(vao);
         GL30.glEnableVertexAttribArray(0);
         GL30.glEnableVertexAttribArray(1);
+        GL30.glEnableVertexAttribArray(2);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
         fromCamera.shader.bind();
 
-        fromCamera.shader.setUniform("model", getTransformationMatrix(parentMobile));
-        fromCamera.shader.setUniform("view", getViewMatrix(fromCamera));
-        fromCamera.shader.setUniform("projection", fromCamera.getProjectionMatrix());
+        Matrix4 model = getTransformationMatrix(parentMobile);
+        Matrix4 view = getViewMatrix(fromCamera);
+        Matrix4 projection = fromCamera.getProjectionMatrix();
+
+        fromCamera.shader.setUniform("PVM", projection.multiply(view).multiply(model));
+        fromCamera.shader.setUniform("V", view);
+        fromCamera.shader.setUniform("M", model);
+        fromCamera.shader.setUniform("LightPosition_worldspace", lightSource.parentMobile.position);
         GL11.glDrawElements(GL11.GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
 
         fromCamera.shader.unbind();
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
         GL30.glDisableVertexAttribArray(0);
         GL30.glDisableVertexAttribArray(1);
+        GL30.glDisableVertexAttribArray(2);
         GL30.glBindVertexArray(0);
     }
 

@@ -3,7 +3,9 @@ package orbitalsimulator;
 import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.camera.CameraMovement;
 import orbitalsimulator.graphics.Window;
+import orbitalsimulator.maths.Unit;
 import orbitalsimulator.maths.rotation.EulerAngles;
+import orbitalsimulator.maths.vector.Vector;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Physics;
 import orbitalsimulator.physics.module.LightSource;
@@ -32,14 +34,15 @@ public class Main {
         SceneSave.load("TestScene");
 
         //Sets the camera movement rules
-        //Scene.getMainCamera().cameraPositionUpdater = CameraMovement.userControlledAroundMobile(Scene.getMobiles().get(0), 5);
-        Scene.getMainCamera().cameraPositionUpdater = CameraMovement.rotateAround(Scene.getMobiles().get(0), 5, Vector3.right().addAltering(Vector3.backward()).normalize(), 2, Vector3.zero());
-        Scene.getMainCamera().cameraRotationUpdater = CameraMovement.lockRotationOn(Scene.getMobiles().get(0));
-        //Scene.getMainCamera().cameraRotationUpdater = CameraMovement.userControlledRotation();
+        Scene.getMainCamera().cameraPositionUpdater = CameraMovement.lockTo3rdPerson(Scene.getMobiles().get(0), 5);
+        Scene.getMainCamera().cameraRotationUpdater = CameraMovement.userControlledRotation();
+        //Scene.getMainCamera().position = Vector3.forward().rotateAltering(Scene.getMobiles().get(0).rotation).getPerpendicular().multiplyAltering(5).addAltering(Scene.getMobiles().get(0).position).addAltering(Vector3.zero());
+        //Scene.getMainCamera().cameraPositionUpdater = CameraMovement.rotateAround(Scene.getMobiles().get(0), 5, Vector3.forward(), 2, Vector3.zero());
+        //Scene.getMainCamera().cameraRotationUpdater = CameraMovement.lockRotationOn(Scene.getMobiles().get(0));
 
         //Temporary
         Scene.getMobiles().get(1).addModule(new LightSource(2));
-        //Scene.getMobiles().get(0).angularVelocity = new EulerAngles(0,20,0).toQuaternion();
+        Scene.getMobiles().get(0).angularVelocity = new EulerAngles(0,20,0,Unit.DEGREES).toQuaternion();
 
         lastFrameStartTime = System.nanoTime();
     }

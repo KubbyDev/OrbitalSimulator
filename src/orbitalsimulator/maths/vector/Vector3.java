@@ -70,6 +70,15 @@ public class Vector3 extends Vector {
                 a.x() * b.y() - a.y() * b.x());
     }
 
+    /** Gives a Vector3 perpendicular to the one in parameter */
+    public static Vector3 getPerpendicular(Vector3 v) {
+        //Crosses the vector with a vector (could be anything)
+        Vector3 cross = v.cross(new Vector3(0.1234, 42, 13.7));
+        if(cross.equals(Vector3.zero(), 0.01)) //If the chosen vector was parallel to v, choses another one
+            cross = v.cross(Vector3.right());
+        return cross;
+    }
+
     // Complex operations ----------------------------------------------------------------------------------------------
 
     /** Rotates this vector by q */
@@ -99,6 +108,8 @@ public class Vector3 extends Vector {
     // Cross product
     /** @see Vector3#cross(Vector3 Vector3) */
     public Vector3 cross(Vector3 b) { return cross(this, b); }
+    /** @see Vector3#getPerpendicular(Vector3) */
+    public Vector3 getPerpendicular() { return getPerpendicular(this); }
 
     // Rotate
     /** @see Vector3#rotateAltering(Vector3, Quaternion) */

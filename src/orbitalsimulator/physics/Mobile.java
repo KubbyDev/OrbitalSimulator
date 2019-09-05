@@ -44,7 +44,7 @@ public class Mobile {
         position = Vector3.zero();
         velocity = Vector3.zero();
         rotation = Quaternion.identity();
-        angularVelocity = Quaternion.fromEulerAngles(0,0,0);
+        angularVelocity = Quaternion.identity();
 
         this.renderer = renderer;
         this.renderer.parentMobile = this;

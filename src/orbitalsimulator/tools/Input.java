@@ -6,7 +6,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.opengl.GLUtil;
 
 public class Input {
 
@@ -58,9 +57,7 @@ public class Input {
     }
 
     /** Returns the mouse position to the top left corner of the screen */
-    public static Vector2 getMousePosition() {
-        return new Vector2(mouseX, mouseY);
-    }
+    public static Vector2 getMousePosition() { return new Vector2(mouseX, mouseY); }
 
     /** Returns the mouse position relative to the center of the screen */
     public static Vector2 getMousePositionFromCenter() {

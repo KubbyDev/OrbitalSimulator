@@ -12,8 +12,8 @@ import org.lwjgl.system.MemoryUtil;
 
 public class Shader {
 
-    public static final String DEFAULT_VERTEX_PATH = "shaders/tests/discoVertex.glsl";
-    public static final String DEFAULT_FRAGMENT_PATH = "shaders/tests/discoFragment.glsl";
+    public static final String DEFAULT_VERTEX_PATH = "shaders/tests/testVertex.glsl";
+    public static final String DEFAULT_FRAGMENT_PATH = "shaders/tests/testFragment.glsl";
     private int vertexID, fragmentID, programID;
 
     public static final Shader DEFAULT = new Shader();

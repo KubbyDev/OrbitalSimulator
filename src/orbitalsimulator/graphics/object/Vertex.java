@@ -6,7 +6,6 @@ public class Vertex {
 
     private Vector3 position;
     private Vector3 normal;
-    private int connectedFaces = 0;
 
     public Vertex(Vector3 position, Vector3 normal) {
         this.position = position;

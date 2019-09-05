@@ -1,10 +1,7 @@
 package orbitalsimulator.graphics.camera;
 
-import orbitalsimulator.maths.Constant;
-import orbitalsimulator.maths.Unit;
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
-import orbitalsimulator.maths.vector.Vector;
 import orbitalsimulator.maths.vector.Vector2;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
@@ -53,9 +50,8 @@ public class CameraMovement {
         return (Camera camera) -> {
             Vector3 rotCenterToCamera = camera.position.subtractAltering(pivot.lastFramePosition).subtractAltering(offset);
             camera.position.addAltering(Vector3.cross(axis.rotate(pivot.rotation), rotCenterToCamera).setLengthAltering(Time.lastFrameCalcTime * speed))
-                    .normalizeAltering().multiplyAltering(radius)
-                    .addAltering(offset)
-                    .addAltering(pivot.position);
+                    .setLengthAltering(radius)
+                    .addAltering(offset).addAltering(pivot.position);
         };
     }
 
@@ -63,24 +59,6 @@ public class CameraMovement {
     public static Consumer<Camera> straightUniform(Vector3 speed) {
         return (Camera camera) -> camera.position.addAltering(speed.multiply(Time.lastFrameCalcTime));
     }
-
-    /** A cameraPositionUpdater that will let the user rotate around a Mobile freely with his mouse */
-    /*public static Consumer<Camera> userControlledAroundMobile(Mobile pivot, double distance) {
-        return (Camera camera) -> {
-            Vector2 movementInput = Input.getMouseMovement();
-            if(!movementInput.equals(Vector2.zero(), 0.01)) {
-                Vector3 localUp =
-
-                Vector3 localSpaceInput = new Vector3(-movementInput.x(), movementInput.y(), 0);
-                localSpaceInput.multiplyAltering(Time.lastFrameCalcTime * 2.0);
-                camera.position.addAltering(pivot.position.subtract(pivot.lastFramePosition))
-                        .subtractAltering(pivot.position)
-                        .addAltering(localSpaceInput.rotateAltering(camera.rotation))
-                        .normalizeAltering().multiplyAltering(distance)
-                        .addAltering(pivot.position);
-            }
-        };
-    }*/
 
     /** A cameraPositionUpdater that will let the user move freely with his input keys (ZQSD) */
     public static Consumer<Camera> userControlledMovements() {
@@ -94,12 +72,21 @@ public class CameraMovement {
         };
     }
 
+    /** A cameraPositionUpdater that will lock the camera to a position where it faces the pivot (without rotating it) */
+    public static Consumer<Camera> lockTo3rdPerson(Mobile pivot, double distance) {
+        return (Camera camera) -> {
+            camera.position = Vector3.forward().rotateAltering(camera.rotation)
+                    .multiplyAltering(-distance).addAltering(pivot.position);
+        };
+    }
+
     // Rotation updaters -----------------------------------------------------------------------------------------------
 
     /** A cameraRotationUpdater that will Lock the camera on a mobile */
     public static Consumer<Camera> lockRotationOn(Mobile target) {
-        return (Camera camera) -> camera.rotation = Quaternion.lookAt(camera.position, target.position);
-        //.toEulerAngles().setRoll(0).toQuaternion();
+        return (Camera camera) -> {
+            camera.rotation = Quaternion.lookAt(camera.position, target.position);
+        };
     }
 
     /** A cameraRotationUpdater that will let the user control his camera freely */

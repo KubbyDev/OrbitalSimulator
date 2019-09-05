@@ -72,9 +72,6 @@ public class Camera {
      * @see Camera#cameraRotationUpdater */
     public void update() {
         cameraPositionUpdater.accept(this);
-
-
-
         cameraRotationUpdater.accept(this);
     }
 
