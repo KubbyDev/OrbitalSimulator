@@ -20,10 +20,18 @@ public class ModelSave {
     private static ArrayList<Vector3> vertexNormals = new ArrayList<>();
 
     /** Parses model data into the given model object
-     * @see ModelSave#parse(String)  */
+     * <br> The data must be in wavefront obj format with the texture path as first line (if there is one): textures/coffee-maker-texture
+     * <br> The faces must be triangles (no squares)*/
     public static Model parse(Model model, String data) {
 
+        registeredVertices = new ArrayList<>();
+        vertexPositions = new ArrayList<>();
+        vertexTextures = new ArrayList<>();
+        vertexNormals = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
+
+        if(data.startsWith("/textures/"))
+            ;
 
         // For each line of the data
         for(String line : data.split("\n")) {
@@ -63,7 +71,7 @@ public class ModelSave {
         return model.init(verticesArray, indicesArray);
     }
     /** Parses model data into a Model object
-     * <br> The format of the data must be .obj and the faces must be triangles (no squares)*/
+     * @see ModelSave#parse(Model, String) */
     public static Model parse(String data) { return parse(new Model(), data); }
     /** Loads a model file into a Model object
      * @param filePath The path of the file from resources/ */
@@ -72,7 +80,7 @@ public class ModelSave {
         //it will not call this function again and get the model from cache
         Model model = new Model();
         FileUtils.addLoadedElement("Model", filePath, model);
-        return parse(FileUtils.readAll(filePath));
+        return parse(model, FileUtils.readAll(filePath));
     }
 
     private static Vector3 getVector3(String[] words) {

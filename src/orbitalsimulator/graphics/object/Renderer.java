@@ -1,6 +1,7 @@
 package orbitalsimulator.graphics.object;
 
 import orbitalsimulator.graphics.camera.Camera;
+import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
 
 import java.util.Map;
@@ -9,7 +10,11 @@ import java.util.TreeMap;
 
 public class Renderer {
 
+    /** The mobile this renderer is attached to */
     public Mobile parentMobile;
+    /** The position of the renderer relative to the position of the parent mobile */
+    public Vector3 offsetFromMobile;
+
     private Model[] models; //List of LODs for this object
     private double[] sqrDistances; //Distance to display each model (squared for performance)
 
@@ -23,6 +28,7 @@ public class Renderer {
 
         models = new Model[lodList.size()];
         sqrDistances = new double[lodList.size()];
+        offsetFromMobile = Vector3.zero();
 
         int i = 0;
         for(Map.Entry<Double, Model> entry : lodList.entrySet()) {
@@ -44,7 +50,7 @@ public class Renderer {
     /** Renders the correct model according to the distance between the parent mobile and the camera
      * Displays nothing if the largest max distance is reached */
     public void render(Camera camera) {
-        double sqrDistance = camera.position.subtract(parentMobile.position).sqrLength();
+        double sqrDistance = camera.position.subtract(parentMobile.position).subtractAltering(offsetFromMobile).sqrLength();
         getModel(sqrDistance).render(parentMobile, camera);
     }
 

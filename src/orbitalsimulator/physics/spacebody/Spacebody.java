@@ -1,4 +1,9 @@
 package orbitalsimulator.physics.spacebody;
 
-public class Spacebody {
+import orbitalsimulator.physics.Mobile;
+
+public class Spacebody extends Mobile {
+
+
+
 }

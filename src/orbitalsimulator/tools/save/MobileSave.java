@@ -3,6 +3,7 @@ package orbitalsimulator.tools.save;
 import orbitalsimulator.graphics.object.Model;
 import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.physics.Mobile;
+import orbitalsimulator.physics.spacebody.Spacebody;
 import orbitalsimulator.tools.FileUtils;
 
 import java.util.TreeMap;
@@ -15,7 +16,7 @@ public class MobileSave {
      * @see MobileSave#parse(String)  */
     public static Mobile parse(Mobile mobile, String data) {
         try {
-            TreeMap<Double, Model> models = new TreeMap<Double, Model>();
+            TreeMap<Double, Model> models = new TreeMap<>();
 
             for(String line : data.split("\n")) {
 
@@ -28,7 +29,7 @@ public class MobileSave {
                             (Model) FileUtils.loadElement("Model", words[1]));
             }
 
-            return mobile.init(null, null, new Renderer(models));
+            return mobile.init(null, null, new Renderer[]{ new Renderer(models) });
         } catch (Exception e) { throw new RuntimeException(e); }
     }
     /** Parses mobile data into a mobile object
@@ -39,14 +40,15 @@ public class MobileSave {
      * <br> Model models/utils/coffee-maker-LOD2 50
      * <br> This will display the coffee-maker-LOD1 up to 10m, then coffee-maker-LOD2 up to 50m, then nothing.
      * If you leave the distance blank, it will be infinity*/
-    public static Mobile parse(String data) { return parse(new Mobile(), data); }
+    public static Mobile parse(String data) { return parse(data.startsWith("Spacebody") ? new Spacebody() : new Mobile(), data); }
     /** Loads a mobile file into a Mobile object
      * @param filePath The path of the file from resources/ */
     public static Mobile load(String filePath) {
         //Calls addLoadedElement so the next time FileUtils.loadElement will be called
         //it will not call this function again and get the mobile from cache
-        Mobile mobile = new Mobile();
+        String data = FileUtils.readAll(filePath);
+        Mobile mobile = data.startsWith("Spacebody") ? new Spacebody() : new Mobile();
         FileUtils.addLoadedElement("Mobile", filePath, mobile);
-        return parse(FileUtils.readAll(filePath));
+        return parse(mobile, data);
     }
 }

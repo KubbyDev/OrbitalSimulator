@@ -131,9 +131,12 @@ public class Vector implements Cloneable {
             res += v.values[i]*v.values[i];
         return res;
     }
-    /** Sets the length of the Vector (normalizes then multiplies) */
-    public static <T extends Vector> T setLengthAltering(T a, double newLength) {
-        return normalizeAltering(a).multiplyAltering(newLength);
+    /** Sets the length of the Vector (multiplies by newLength/length) */
+    public static <T extends Vector> T setLengthAltering(T res, double newLength) {
+        double length = length(res);
+        if(length == 0)
+            throw new ArithmeticException("Can't set the length of a 0 vector");
+        return multiplyAltering(res, newLength/length);
     }
 
     //Normalization

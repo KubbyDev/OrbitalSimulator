@@ -4,6 +4,10 @@ import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.vector.Vector;
 import orbitalsimulator.maths.vector.Vector3;
 
+/** A Vector limited to 4 values
+ * <br><br> This class represents a Quaternion, so it contains some functions that can be useful to work with them
+ * (rotation, conversion to Euler angles etc...)
+ * @see Vector */
 public class Quaternion extends Vector {
 
     // Base ------------------------------------------------------------------------------------------------------------
@@ -91,9 +95,12 @@ public class Quaternion extends Vector {
             dot = -dot;
         }
 
-        // If the inputs are too close, take q2
-        if (dot > 0.9995)
-            return q2;
+        // If the inputs are too close, we just do a linear interpolation
+        if (dot > 0.9995) {
+            return q1.copy().addAltering(
+                    q2.copy().subtractAltering(q1).multiplyAltering(alpha)
+            ).normalizeAltering();
+        }
 
         double theta_0 = Math.acos(dot);        // theta_0 = angle between input vectors
         double theta = theta_0*alpha;          // theta = angle between v0 and result
@@ -105,8 +112,6 @@ public class Quaternion extends Vector {
 
         return Quaternion.add(q1.multiply(s1), q2.multiply(s2));
     } //Source: https://en.wikipedia.org/wiki/Slerp#Source_code
-    public static Quaternion scale(Quaternion q, double alpha) { return slerp(Quaternion.identity(), q, alpha); }
-    public Quaternion scale(double alpha) { return slerp(Quaternion.identity(), this, alpha); }
 
     /** Calculates the angles between a and b
      * <br> a.rotate(angleBetweenVectors(a,b)) = b */
@@ -127,6 +132,7 @@ public class Quaternion extends Vector {
         return new Quaternion(real_part, w.x(), w.y(), w.z()).normalizeAltering();
     } //Source: http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
 
+    /** Returns a quaternion representing a rotation that faces the 'to' position from the 'from' position */
     public static Quaternion lookAt(Vector3 from, Vector3 to) {
 
         Vector3 forwardVector = to.subtract(from).normalizeAltering();
@@ -156,4 +162,10 @@ public class Quaternion extends Vector {
     // From Euler angles
     /** @see Quaternion#fromEulerAngles(double, double, double) */
     public static Quaternion fromEulerAngles(EulerAngles eulerAngles) { return fromEulerAngles(eulerAngles.yaw(), eulerAngles.pitch(), eulerAngles.roll()); }
+
+    // Slerp
+    /** Scales a rotation by a number (does a slerp from identity) */
+    public static Quaternion scale(Quaternion q, double alpha) { return slerp(Quaternion.identity(), q, alpha); }
+    /** @see Quaternion#scale(Quaternion, double) */
+    public Quaternion scale(double alpha) { return slerp(Quaternion.identity(), this, alpha); }
 }

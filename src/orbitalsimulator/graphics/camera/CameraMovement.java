@@ -10,6 +10,7 @@ import orbitalsimulator.tools.Input;
 
 import java.util.function.Consumer;
 
+/** This class generously provides some camera(Position/Rotation)Updaters */
 public class CameraMovement {
 
     /** Does nothing. <br> Can be used as cameraPositionUpdater or as CameraRotationUpdater */
@@ -24,13 +25,13 @@ public class CameraMovement {
     public static Consumer<Camera> rotateAround(Mobile pivot, double radius, double speed) {
         //This function is a simplyfied version of the one bellow
         return (Camera camera) -> {
-            camera.position.subtractAltering(pivot.lastFramePosition)
-                    .addAltering(Vector3.right().multiplyAltering(Time.lastFrameCalcTime * speed))
-                    .normalizeAltering().multiplyAltering(radius)
+            Vector3 rotCenterToCamera = camera.position.subtractAltering(pivot.lastFramePosition);
+            camera.position.addAltering(Vector3.cross(Vector3.up(), rotCenterToCamera).setLengthAltering(Time.lastFrameCalcTime * speed))
+                    .setLengthAltering(radius)
                     .addAltering(pivot.position);
         };
     }
-    /** A cameraPositionUpdater that will make the camera rotate around a mobile around an axis (in local coordinates)
+    /** A cameraPositionUpdater that will make the camera rotate around a mobile around an axis (in global coordinates)
      * WARNING: The axis must not be collinear with the vector from the pivot to the camera
      * @param pivot The mobile around which the Camera is supposed to turn
      * @param radius The distance the camera will keep with the pivot
@@ -49,7 +50,7 @@ public class CameraMovement {
          */
         return (Camera camera) -> {
             Vector3 rotCenterToCamera = camera.position.subtractAltering(pivot.lastFramePosition).subtractAltering(offset);
-            camera.position.addAltering(Vector3.cross(axis.rotate(pivot.rotation), rotCenterToCamera).setLengthAltering(Time.lastFrameCalcTime * speed))
+            camera.position.addAltering(Vector3.cross(axis, rotCenterToCamera).setLengthAltering(Time.lastFrameCalcTime * speed))
                     .setLengthAltering(radius)
                     .addAltering(offset).addAltering(pivot.position);
         };

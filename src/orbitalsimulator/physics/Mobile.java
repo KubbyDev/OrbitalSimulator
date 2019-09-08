@@ -5,6 +5,8 @@ import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.collider.Collider;
 import orbitalsimulator.maths.rotation.Quaternion;
+import orbitalsimulator.physics.forces.Force;
+import orbitalsimulator.physics.forces.NewtonianGravity;
 import orbitalsimulator.physics.module.LightSource;
 import orbitalsimulator.physics.tools.Time;
 import orbitalsimulator.physics.module.Module;
@@ -16,17 +18,23 @@ import java.util.stream.Collectors;
  * It can also contain Modules which can perform actions (emit light, produce thrust etc) */
 public class Mobile {
 
-    //Physical values
+    //-- Physical values --
     public Vector3 position;
-    public Vector3 velocity;
+    public Vector3 velocity; //In m/s
     public Quaternion rotation;
-    public Quaternion angularVelocity;
+    public Quaternion angularVelocity; //In rad/s
+    public double mass; //In kg
 
-    //Objects contained by this mobile
-    private ArrayList<Module> modules = new ArrayList<>(); //Modules. The main module is the 0th item
-    private Renderer renderer; //Selects and renders a model based on the distance with the camera
+    //-- Objects contained by this mobile --
+    //Modules. The main module is the 0th item
+    private ArrayList<Module> modules = new ArrayList<>();
+    //Renderers. It can be useful to have multiple to set different LODs on
+    //different places of the mobile (useful for planets for example)
+    private ArrayList<Renderer> renderers = new ArrayList<>();
+    //Contains all the objects that can act on the velocity/angularVelocity of this mobile (except the colliders)
+    private ArrayList<Force> forces = new ArrayList<>();
 
-    //Useful values
+    //-- Useful values --
     public Vector3 lastFramePosition = Vector3.zero();
 
     /** This contructor can be used to get a reference to the object before initialising it.
@@ -34,20 +42,25 @@ public class Mobile {
     public Mobile() { }
     /** Constructs a mobile from its components */
     public Mobile(Collider collider, Module mainModule, Renderer renderer) {
-        init(collider, mainModule, renderer);
+        init(collider, mainModule, new Renderer[]{ renderer });
     }
 
     /** Initialises a Mobile with the given components. Useful with Mobile()
      * @see Mobile#Mobile() */
-    public Mobile init(Collider collider, Module mainModule, Renderer renderer) {
+    public Mobile init(Collider collider, Module mainModule, Renderer[] renderers) {
 
         position = Vector3.zero();
         velocity = Vector3.zero();
         rotation = Quaternion.identity();
         angularVelocity = Quaternion.identity();
+        mass = 1;
 
-        this.renderer = renderer;
-        this.renderer.parentMobile = this;
+        for(Renderer renderer : renderers) {
+            renderer.parentMobile = this;
+            this.renderers.add(renderer);
+        }
+
+        forces.add(new NewtonianGravity(this));
 
         return this;
     }
@@ -56,6 +69,11 @@ public class Mobile {
 
     /** Updates the position and rotation of the mobile */
     public void update() {
+
+        //Applies all the forces that can act on this mobile (gravity, air resistance etc)
+        for(Force force : forces)
+            force.apply();
+
         position = position.add(velocity.multiply(deltaTime()));
         rotation = rotation.multiply(angularVelocity.copy().quaternion().scale(deltaTime()));
     }
@@ -65,7 +83,7 @@ public class Mobile {
 
     // Renderer --------------------------------------------------------------------------------------------------------
 
-    public Renderer getRenderer() { return renderer; }
+    public ArrayList<Renderer> getRenderers() { return renderers; }
 
     // Modules ---------------------------------------------------------------------------------------------------------
 

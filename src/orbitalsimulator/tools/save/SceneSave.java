@@ -1,6 +1,7 @@
 package orbitalsimulator.tools.save;
 
 import orbitalsimulator.graphics.camera.Camera;
+import orbitalsimulator.maths.Unit;
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
@@ -35,7 +36,7 @@ public class SceneSave {
                 //Position
                 Vector3 position = new Vector3(Double.parseDouble(words[2]), Double.parseDouble(words[3]), Double.parseDouble(words[4]));
                 //Rotation
-                Quaternion rotation = new EulerAngles(Double.parseDouble(words[2]), Double.parseDouble(words[3]), Double.parseDouble(words[4])).toQuaternion();
+                Quaternion rotation = new EulerAngles(Double.parseDouble(words[5]), Double.parseDouble(words[6]), Double.parseDouble(words[7]), Unit.DEGREES).toQuaternion();
 
                 Object element = FileUtils.loadElement(type, path);
                 if(type.equals("Camera"))

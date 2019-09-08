@@ -45,7 +45,6 @@ public class Matrix3 extends SquareMatrix {
 
     /** @return The rotation matrix corresponding to the quaternion in parameter */
     public static Matrix3 fromQuaternion(Quaternion q) {
-
         return new Matrix3(
                 1.0f - 2.0f*q.y()*q.y() - 2.0f*q.z()*q.z(), 2.0f*q.x()*q.y() - 2.0f*q.z()*q.w(), 2.0f*q.x()*q.z() + 2.0f*q.y()*q.w(),
                 2.0f*q.x()*q.y() + 2.0f*q.z()*q.w(), 1.0f - 2.0f*q.x()*q.x() - 2.0f*q.z()*q.z(), 2.0f*q.y()*q.z() - 2.0f*q.x()*q.w(),
