@@ -3,9 +3,11 @@ package orbitalsimulator.tools.save;
 import orbitalsimulator.graphics.object.Model;
 import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.physics.Mobile;
+import orbitalsimulator.physics.module.Module;
 import orbitalsimulator.physics.spacebody.Spacebody;
 import orbitalsimulator.tools.FileUtils;
 
+import java.util.Arrays;
 import java.util.TreeMap;
 
 public class MobileSave {
@@ -15,6 +17,7 @@ public class MobileSave {
     /** Parses mobile data into the given mobile object
      * @see MobileSave#parse(String)  */
     public static Mobile parse(Mobile mobile, String data) {
+
         try {
             TreeMap<Double, Model> models = new TreeMap<>();
 
@@ -23,23 +26,37 @@ public class MobileSave {
                 String[] words = line.split(" ");
 
                 // If it is a model, adds it to the Map
-                if(words[0].equals("Model"))
+                if(words[0].equals("Model")) {
                     models.put(
                             words.length > 2 ? Double.parseDouble(words[2]) : Double.POSITIVE_INFINITY,
                             (Model) FileUtils.loadElement("Model", words[1]));
+                }
+
+                //If it is a module, parses it and adds it to the mobile
+                if(words[0].equals("Module")) {
+                    Class clazz = Class.forName("orbitalsimulator.physics.module.modules." + words[1]);
+                    Module toAdd = (Module) clazz.getMethod("parse", String[].class).invoke(null, (Object) Arrays.copyOfRange(words, 3, words.length));
+                    mobile.addModule(toAdd, words[2]);
+                }
             }
 
-            return mobile.init(null, null, new Renderer[]{ new Renderer(models) });
+            return mobile.init(new Renderer[]{ new Renderer(models) });
         } catch (Exception e) { throw new RuntimeException(e); }
     }
     /** Parses mobile data into a mobile object
      * <br> The format must be like this:
      * <br>
-     * <br> Definition of the models (from the closest to the furthest): model modelPath distance. Ex:
+     * <br> Definition of the modules: Module moduleType moduleName arguments. Ex:
+     * <br> Module LightSource Light 2 (2 is the intensity in the case of the light source)
+     * <br> Module BoardComputer Compy programs/Test (programs/Test is the path of the program)
+     * <br> The arguments for each module are described in the parse method in the module's class.
+     * The module name is the corresponding class name.
+     * <br>
+     * <br> Definition of the models (from the closest to the furthest): Model modelPath distance. Ex:
      * <br> Model models/utils/coffee-maker-LOD1 10
      * <br> Model models/utils/coffee-maker-LOD2 50
      * <br> This will display the coffee-maker-LOD1 up to 10m, then coffee-maker-LOD2 up to 50m, then nothing.
-     * If you leave the distance blank, it will be infinity*/
+     * If you leave the distance blank, it will be infinity */
     public static Mobile parse(String data) { return parse(data.startsWith("Spacebody") ? new Spacebody() : new Mobile(), data); }
     /** Loads a mobile file into a Mobile object
      * @param filePath The path of the file from resources/ */

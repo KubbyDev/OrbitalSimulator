@@ -41,17 +41,17 @@ public class Camera {
 
         this.position = position;
         this.rotation = rotation;
-
         shader = Shader.DEFAULT;
         cameraPositionUpdater = CameraMovement.immobile();
         cameraRotationUpdater = CameraMovement.immobile();
+
+        //Precalculates the projection matrix (used during render)
         double fov = DEFAULT_FOV;
         double near = DEFAULT_NEAR;
         double far = DEFAULT_FAR;
         double aspect = (double) Window.getWidth() / Window.getHeight();
         double tanFOV = Math.tan(fov*Constant.TO_RADIANS/2);
         double range = far - near;
-
         projectionMatrix = new Matrix4()
                 .set(0, 0, 1.0 / (aspect * tanFOV))
                 .set(1, 1, 1.0 / tanFOV)

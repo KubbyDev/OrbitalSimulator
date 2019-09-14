@@ -3,7 +3,6 @@ package orbitalsimulator.maths.vector;
 import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 
-import java.security.spec.ECField;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

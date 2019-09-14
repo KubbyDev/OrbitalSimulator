@@ -1,0 +1,24 @@
+    A faire en priorite
+
+    Graphismes:
+Prise en charge des materials dans le model loader (transparence, textures etc)
+Affichage des textures + mettre au propre les shaders
+Gestion de la transparence
+    Chargement:
+Algo de separation de la surface des planetes (input= planete HD, output: liste de models separes)
+    Modules:
+Command SET parametre generique (+ changement de source)
+positionOffset
+Moteur
+MainModule des mobiles + gestion des variations de masse
+    Mobiles:
+Jointures solides
+    Physique:
+applyForceAtLocation
+Gestion des shere colliders
+    Menus:
+UI de gestion du multiplicateur de temps
+
+    A ne pas oublier
+
+Optimiser le rendu multi model

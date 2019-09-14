@@ -1,0 +1,69 @@
+package orbitalsimulator.physics.module.modules;
+
+import orbitalsimulator.physics.module.Module;
+import org.lwjglx.debug.org.eclipse.jetty.util.StringUtil;
+
+/** A module that can store fuel */
+public class FuelTank extends Module {
+
+    /** Mass of the fuel tank per liter of capacity (kg) */
+    public static final double STRUCTURE_MASS_PER_LITER = 50;
+    /** The quantity of fuel that can be transfered inside or outside the tank in L*s^-1 */
+    public static final double MAX_TRANSFERT_SPEED = 50;
+
+    private double fuelMass; //In kg/L^-1
+    private double maxFuel;  //In L
+    private double fuelLeft; //In L
+    private String source;   //Tank in which this tank can resupply (can be null)
+
+    /** Constructs a FuelTank module. Full by default
+     * The source is the tank in which this tank can resupply (can be null) */
+    public FuelTank(double capacityInLiters, String source) {
+        this.source = StringUtil.isBlank(source) ? null : source;
+        maxFuel = fuelLeft = capacityInLiters;
+        mass = capacityInLiters*STRUCTURE_MASS_PER_LITER;
+    }
+
+    /** @returns the amount of fuel left in liters */
+    public double getFuelLeft() { return fuelLeft; }
+
+    /** Removes the given amount of fuel from the tank. If the given amount is greater
+     * than the max quantity of fuel that can be transfered by unit of time, or if the
+     * amount of fuel left is not enough, then the actual fuel consumed will be different
+     * from the asked quantity.
+     * @returns The quantity of fuel that could be consumed */
+    public double consumeFuel(double fuelConsumed) {
+        //Limits the consumption if it is greater than the max transfert speed
+        double max = MAX_TRANSFERT_SPEED*parentMobile.deltaTime();
+        if(fuelConsumed > max)
+            fuelConsumed = max;
+        //If there is not enough fuel left
+        if(fuelLeft < fuelConsumed)
+            fuelConsumed = fuelLeft;
+
+        fuelLeft -= fuelConsumed;
+        return fuelConsumed;
+    }
+
+    @Override
+    public boolean areNeedsSatisfied() {
+
+        return true;
+    }
+
+    @Override
+    public void doActions() {
+        //If a source is defined, this tank will try to refill from it
+        if(source != null)
+            fuelLeft += ((FuelTank) parentMobile.findModule(source))
+                    .consumeFuel(maxFuel - fuelLeft);
+    }
+
+    @Override
+    public double getMass() { return mass + fuelLeft*fuelMass; }
+
+    /** Builds the Module. The arguments are the ones found in the mobile file
+     * This method is called automaticly by MobileSave
+     * <br> Arguments should be: capacityInLiters */
+    public static Module parse(String... args) { return new FuelTank(Double.parseDouble(args[0]), args[1]); }
+}

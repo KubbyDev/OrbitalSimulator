@@ -5,7 +5,7 @@ import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
-import orbitalsimulator.physics.module.LightSource;
+import orbitalsimulator.physics.module.modules.LightSource;
 import orbitalsimulator.physics.spacebody.Spacebody;
 
 import java.util.ArrayList;

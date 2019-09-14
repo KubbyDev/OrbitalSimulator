@@ -6,7 +6,6 @@ import orbitalsimulator.graphics.camera.CameraMovement;
 import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Physics;
-import orbitalsimulator.physics.module.LightSource;
 import orbitalsimulator.physics.tools.Time;
 import orbitalsimulator.tools.Input;
 import orbitalsimulator.tools.save.SceneSave;
@@ -46,13 +45,15 @@ public class Main {
         //Temporary
         Scene.getMobiles().get(0).mass = 1e12;
         Scene.getMobiles().get(1).velocity = Vector3.right().multiplyAltering(1.2*Math.sqrt(Constant.GRAVITY*Scene.getMobiles().get(0).mass/Scene.getMobiles().get(1).position.subtractAltering(Scene.getMobiles().get(0).position).length()));
-        Scene.getMobiles().get(1).addModule(new LightSource(2));
+        //Scene.getMobiles().get(1).addModule(new LightSource(10), "Light");
         //Scene.getMobiles().get(0).angularVelocity = new EulerAngles(0,10,0,Unit.DEGREES).toQuaternion();
         //Scene.getMobiles().get(0).velocity = Vector3.right().multiplyAltering(0.5);
         //Scene.getMobiles().get(1).velocity = Vector3.right().multiplyAltering(0.5);
         //Scene.getMobiles().get(0).getRenderers().get(0).offsetFromMobile = Vector3.right().multiplyAltering(5);
 
         GLFW.glfwSetCursorPos(Window.getId(), (double) Window.getWidth()/2, (double) Window.getHeight()/2);
+
+        //Scene.getMobiles().get(1).addModule(new BoardComputer(""), "Compy");
 
         lastFrameStartTime = System.nanoTime();
     }

@@ -5,7 +5,7 @@ import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.maths.matrix.Matrix3;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.physics.Mobile;
-import orbitalsimulator.physics.module.LightSource;
+import orbitalsimulator.physics.module.modules.LightSource;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -19,16 +19,14 @@ public class Model {
 
     public static Model EMPTY = new Model(new Vertex[0], new int[0]); //An empty model that can be used for optimization
 
-    private Vertex[] vertices; //List of all the vertices composing the mesh of the model
-    private int[] indices;     //List of the indices of the vertices (order)
+    private int indicesNumber;     //Number of indices (order of the vertices)
     private int vao, ibo;      //Buffer variables useful to the graphics library
 
     public Model() {}
     public Model(Vertex[] vertices, int[] indices) { init(vertices, indices); }
     public Model init(Vertex[] vertices, int[] indices) {
 
-        this.vertices = vertices;
-        this.indices = indices;
+        this.indicesNumber = indices.length;
 
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
@@ -121,9 +119,10 @@ public class Model {
         fromCamera.shader.setUniform("V", view);
         fromCamera.shader.setUniform("M", model);
         fromCamera.shader.setUniform("LightPosition_worldspace", lightSource.parentMobile.position);
+        fromCamera.shader.setUniform("LightPower", (float) lightSource.getIntensity());
 
         //Shaders execution
-        GL11.glDrawElements(GL11.GL_TRIANGLES, indices.length, GL11.GL_UNSIGNED_INT, 0);
+        GL11.glDrawElements(GL11.GL_TRIANGLES, indicesNumber, GL11.GL_UNSIGNED_INT, 0);
 
         fromCamera.shader.unbind();
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);

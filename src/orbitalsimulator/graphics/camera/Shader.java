@@ -12,9 +12,9 @@ import org.lwjgl.system.MemoryUtil;
 
 public class Shader {
 
-    public static final String DEFAULT_VERTEX_PATH = "shaders/tests/testVertex.glsl";
-    public static final String DEFAULT_FRAGMENT_PATH = "shaders/tests/testFragment.glsl";
-    private int vertexID, fragmentID, programID;
+    public static final String DEFAULT_VERTEX_PATH = "shaders/DefaultVertex.glsl";
+    public static final String DEFAULT_FRAGMENT_PATH = "shaders/DefaultFragment.glsl";
+    private int programID;
 
     public static final Shader DEFAULT = new Shader();
 
@@ -29,14 +29,14 @@ public class Shader {
         programID = GL20.glCreateProgram();
 
         // Compiles the Vertex shader
-        vertexID = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
+        int vertexID = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
         GL20.glShaderSource(vertexID, vertexCode);
         GL20.glCompileShader(vertexID);
         if (GL20.glGetShaderi(vertexID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
             throw new RuntimeException("Vertex Shader: " + GL20.glGetShaderInfoLog(vertexID));
 
         // Compiles the Fragment shader
-        fragmentID = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
+        int fragmentID = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
         GL20.glShaderSource(fragmentID, fragmentCode);
         GL20.glCompileShader(fragmentID);
         if (GL20.glGetShaderi(fragmentID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
@@ -56,41 +56,22 @@ public class Shader {
 
     public int getUniformLocation(String name) { return GL20.glGetUniformLocation(programID, name); }
 
+    //Uniforms: values that are constant for the whole mesh render
     public void setUniform(String name, float value) { GL20.glUniform1f(getUniformLocation(name), value); }
-
     public void setUniform(String name, int value) { GL20.glUniform1i(getUniformLocation(name), value); }
-
     public void setUniform(String name, boolean value) { GL20.glUniform1i(getUniformLocation(name), value ? 1 : 0); }
-
-    public void setUniform(String name, Vector2 value) {
-        GL20.glUniform2f(getUniformLocation(name), (float) value.x(), (float) value.y());
-    }
-
-    public void setUniform(String name, Vector3 value) {
-        GL20.glUniform3f(getUniformLocation(name), (float) value.x(), (float) value.y(), (float) value.z());
-    }
-
+    public void setUniform(String name, Vector2 value) { GL20.glUniform2f(getUniformLocation(name), (float) value.x(), (float) value.y()); }
+    public void setUniform(String name, Vector3 value) { GL20.glUniform3f(getUniformLocation(name), (float) value.x(), (float) value.y(), (float) value.z()); }
     public void setUniform(String name, Matrix4 matrix) {
-
         FloatBuffer buffer = MemoryUtil.memAllocFloat(16);
-
         float[] values = new float[16];
         for(int y = 0; y < 4; y++)
             for(int x = 0; x < 4; x++)
                 values[4*y+x] = (float) matrix.get(x,y);
-
         buffer.put(values).flip();
         GL20.glUniformMatrix4fv(getUniformLocation(name), true, buffer);
     }
 
     public void bind() { GL20.glUseProgram(programID); }
     public void unbind() { GL20.glUseProgram(0); }
-
-    public void destroy() {
-        GL20.glDetachShader(programID, vertexID);
-        GL20.glDetachShader(programID, fragmentID);
-        GL20.glDeleteShader(vertexID);
-        GL20.glDeleteShader(fragmentID);
-        GL20.glDeleteProgram(programID);
-    }
 }
