@@ -28,8 +28,6 @@ public class Mobile {
     public Quaternion rotation;
     /** The angular velocity of the mobile in rad/s */
     public Quaternion angularVelocity;
-    /** The mass of the mobile in kg */
-    public double mass;
 
     //-- Objects contained by this mobile --
     //Modules. The main module is the 0th item
@@ -39,7 +37,8 @@ public class Mobile {
     private ArrayList<Renderer> renderers = new ArrayList<>();
     //Contains all the objects that can act on the velocity/angularVelocity of this mobile (except the colliders)
     private ArrayList<Force> forces = new ArrayList<>();
-    /** */
+    /** The custom force component of this mobile. To add a force on it, use customForce.add(force)
+     * This component should be used for forces that are not natural, like engine thrust */
     public CustomForce customForce;
 
     //-- Useful values --
@@ -49,9 +48,7 @@ public class Mobile {
      * Don't forget to initialise the Mobile or everything will crash */
     public Mobile() { }
     /** Constructs a mobile from its components */
-    public Mobile(Renderer renderer) {
-        init(new Renderer[]{ renderer });
-    }
+    public Mobile(Renderer renderer) { init(new Renderer[]{ renderer }); }
 
     /** Initialises a Mobile with the given components. Useful with Mobile()
      * @see Mobile#Mobile() */
@@ -61,7 +58,6 @@ public class Mobile {
         velocity = Vector3.zero();
         rotation = Quaternion.identity();
         angularVelocity = Quaternion.identity();
-        mass = 1;
 
         for(Renderer renderer : renderers) {
             renderer.parentMobile = this;
@@ -90,12 +86,13 @@ public class Mobile {
 
         position = position.add(velocity.multiply(deltaTime()));
         rotation = rotation.multiply(angularVelocity.copy().quaternion().scale(deltaTime()));
-
-
     }
 
     /** @returns the deltaTime a the mobile's position (Every movement for example must be scaled by this number) */
     public double deltaTime() { return Time.deltaTime(position); }
+
+    /** Calculates the mass of the mobile (sum of the masses of the modules */
+    public double getMass() { return modules.values().stream().mapToDouble(Module::getMass).sum(); }
 
     // Renderer --------------------------------------------------------------------------------------------------------
 

@@ -1,3 +1,5 @@
-Module LightSource Light 15
-Module BoardComputer Compy programs/Test
+Module LightSource Light : 15
+Module BoardComputer Compy : programs/Test
+Module Engine Engine : 1000 100 700 Fuel
+Module FuelTank Fuel : 100 null
 Model models/SmallCube

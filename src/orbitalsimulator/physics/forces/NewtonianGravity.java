@@ -16,15 +16,16 @@ public class NewtonianGravity extends Force {
         Vector3 forcesSum = Vector3.zero();
         for(Spacebody spacebody : Scene.getSpacebodies()) {
 
+            //Doesn't apply gravity on itself
             if(spacebody == parentMobile) continue;
 
             Vector3 toSpacebody = spacebody.position.subtract(parentMobile.position);
             forcesSum.addAltering(
                     toSpacebody.setLengthAltering(
-                            Constant.GRAVITY*parentMobile.mass*spacebody.mass/toSpacebody.sqrLength()));
+                            Constant.GRAVITY*parentMobile.getMass()*spacebody.getMass()/toSpacebody.sqrLength()));
         }
 
         //Application of the force to affect the velocity
-        parentMobile.velocity.addAltering( forcesSum.multiplyAltering(parentMobile.deltaTime()/parentMobile.mass) );
+        parentMobile.velocity.addAltering( forcesSum.multiplyAltering(parentMobile.deltaTime()/parentMobile.getMass()) );
     }
 }

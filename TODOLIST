@@ -6,16 +6,17 @@ Affichage des textures + mettre au propre les shaders
 Gestion de la transparence
     Chargement:
 Algo de separation de la surface des planetes (input= planete HD, output: liste de models separes)
+Refonte du chargement des modules: Arguments optionnels
     Modules:
-Command SET parametre generique (+ changement de source)
-positionOffset
-Moteur
+updateField: verifications des inputs (ex: bounds)
+Moteur predefinis
 MainModule des mobiles + gestion des variations de masse
     Mobiles:
 Jointures solides
+Trouver une solution pour charger les Spacebodies (notament la fonction de densité atmospherique)
     Physique:
 applyForceAtLocation
-Gestion des shere colliders
+Gestion des sphere colliders
     Menus:
 UI de gestion du multiplicateur de temps
 

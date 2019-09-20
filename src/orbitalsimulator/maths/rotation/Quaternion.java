@@ -36,7 +36,8 @@ public class Quaternion extends Vector {
     /** Gives the conjugate of q (q.w, -q.x, -q.y, -q.z) */
     public static Quaternion conjugate(Quaternion q) { return new Quaternion(q.w(), -q.x(), -q.y(), -q.z()); }
 
-    /** Multiplies 2 quaternions. Has the effect of composing the rotations
+    /** Multiplies 2 quaternions.
+     * <br> Has the effect of composing the rotations (a then b)
      * @return a*b (Warning: the product of quaternions is NOT commutative) */
     public static Quaternion multiply(Quaternion a, Quaternion b) {
         return new Quaternion(

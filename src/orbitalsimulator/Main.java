@@ -43,8 +43,7 @@ public class Main {
         //Scene.getMainCamera().cameraRotationUpdater = CameraMovement.lockRotationOn(Scene.getMobiles().get(0));
 
         //Temporary
-        Scene.getMobiles().get(0).mass = 1e12;
-        Scene.getMobiles().get(1).velocity = Vector3.right().multiplyAltering(1.2*Math.sqrt(Constant.GRAVITY*Scene.getMobiles().get(0).mass/Scene.getMobiles().get(1).position.subtractAltering(Scene.getMobiles().get(0).position).length()));
+        Scene.getMobiles().get(1).velocity = Vector3.right().multiplyAltering(1.2*Math.sqrt(Constant.GRAVITY*Scene.getMobiles().get(0).getMass()/Scene.getMobiles().get(1).position.subtractAltering(Scene.getMobiles().get(0).position).length()));
         //Scene.getMobiles().get(1).addModule(new LightSource(10), "Light");
         //Scene.getMobiles().get(0).angularVelocity = new EulerAngles(0,10,0,Unit.DEGREES).toQuaternion();
         //Scene.getMobiles().get(0).velocity = Vector3.right().multiplyAltering(0.5);

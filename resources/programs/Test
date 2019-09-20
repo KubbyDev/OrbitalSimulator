@@ -1,3 +1,4 @@
+SET Engine power 1
 SET Light power 1
 WAIT 2000
 SET Light power 0

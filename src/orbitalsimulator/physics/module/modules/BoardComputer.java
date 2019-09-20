@@ -1,5 +1,7 @@
 package orbitalsimulator.physics.module.modules;
 
+import orbitalsimulator.maths.rotation.Quaternion;
+import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.module.Module;
 import orbitalsimulator.tools.FileUtils;
 
@@ -13,15 +15,14 @@ public class BoardComputer extends Module {
     private double waitingTime = 0; //The time left to wait before executing the next command (seconds)
 
     public BoardComputer(String program) {
+        super(Vector3.zero(), Quaternion.identity());
         mass = 10;
         //Program compilation
         commands = Arrays.stream(program.split("\n")).collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
-    public boolean areNeedsSatisfied() {
-        return true;
-    }
+    public boolean areNeedsSatisfied() { return true; }
 
     @Override
     public void doActions() {
@@ -57,7 +58,7 @@ public class BoardComputer extends Module {
      * <br> Set the moduleName to self to target the executing module */
     private void executeSet(String[] words) {
         Module target = words[1].equals("self") ? this : parentMobile.findModule(words[1]);
-        target.receiveCommand("SET", words[2], Double.parseDouble(words[3]));
+        target.updateField(words[2], words[3]);
     }
 
     /** Executes a wait command: WAIT timeInMs */

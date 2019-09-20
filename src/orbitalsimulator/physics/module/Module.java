@@ -1,5 +1,7 @@
 package orbitalsimulator.physics.module;
 
+import orbitalsimulator.maths.rotation.Quaternion;
+import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
 
 import java.lang.reflect.Field;
@@ -14,12 +16,22 @@ public abstract class Module {
     public Mobile parentMobile;
     /** The fields that can be modified by the on bord computer (ex: power) */
     public ArrayList<Field> accessibleFields;
+    /** The position of the Module relative to the Mobile */
+    public Vector3 localPosition;
+    /** The rotation of the Module relative to the Mobile */
+    public Quaternion localRotation;
 
     /** The mass of the not changing parts of the module */
-    protected double mass = 0; //In kg
+    protected double mass = 0; //In kg. This field should not be public because there is a getMass function that is overriden by some modules
 
     /** Constructs a module (initialises the accessible fields) */
-    protected Module() {
+    protected Module(Vector3 localPosition, Quaternion localRotation) {
+
+        this.localPosition = localPosition;
+        this.localRotation = localRotation;
+
+        //Searches for field with the AccessibleField annotation in the child classes of the module
+        //These fields can be modified by the board computer
         this.accessibleFields = new ArrayList<>();
         Class clazz = this.getClass();
         while(clazz != Module.class) {
@@ -53,12 +65,9 @@ public abstract class Module {
         doActions();
     }
 
-    /** Executes a command of the form: SET power 0.8
-     * These commands can be sent by the on bord computer */
-    public void receiveCommand(String commandType, String fieldName, double value) {
-
-        if(!commandType.equals("SET"))
-            return; //TODO: Gerer le get ?
+    /** Sets the specified value on the specified field
+     * <br> Special case: If the field is a String and the input is "null", the field will be set to null */
+    public void updateField(String fieldName, String value) {
 
         //Searches for the corresponding field in the accessible fields (calculated in the contructor)
         Field field = null;
@@ -74,7 +83,13 @@ public abstract class Module {
 
         //Sets it if it has been found
         try {
-            field.setDouble(this, value);
-        } catch (IllegalAccessException e) { throw new RuntimeException(e); } //Should not happen
+            //Parses the input in the type of the target field and sets the target field
+            if (field.getType() == double.class)
+                field.setDouble(this, Double.parseDouble(value));
+            else if (field.getType() == String.class)
+                field.set(this, value.equals("null") ? null : value);
+            else
+                throw new RuntimeException("The type of the AccessibleField must be Double or String !");
+        } catch (IllegalAccessException e) { throw new RuntimeException(e); }
     }
 }
