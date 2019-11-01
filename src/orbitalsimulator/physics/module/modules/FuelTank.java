@@ -1,6 +1,5 @@
 package orbitalsimulator.physics.module.modules;
 
-import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.module.AccessibleField;
 import orbitalsimulator.physics.module.Module;
@@ -24,7 +23,6 @@ public class FuelTank extends Module {
     /** Constructs a FuelTank module. Full by default
      * The source is the tank in which this tank can resupply (can be null) */
     public FuelTank(double capacityInLiters, String source) {
-        super(Vector3.zero(), Quaternion.identity());
         this.source = source == null || source.equals("null") ? null : source;
         maxFuel = fuelLeft = capacityInLiters;
         mass = capacityInLiters*STRUCTURE_MASS_PER_LITER;
@@ -69,6 +67,9 @@ public class FuelTank extends Module {
 
     @Override
     public double getMass() { return mass + fuelLeft*FUEL_MASS; }
+
+    @Override
+    public Vector3 getCenterOfMass() { return localPosition; } //TODO
 
     /** Builds the Module. The arguments are the ones found in the mobile file
      * This method is called automaticly by MobileSave

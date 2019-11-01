@@ -30,7 +30,6 @@ public class Engine extends Module {
      * @param consumption in L/s
      * @param source The fuel tank this engine can resupply in */
     public Engine(double maxThrust, double consumption, double mass, String source) {
-        super(Vector3.zero(), Quaternion.identity());
         this.source = source == null || source.equals("null") ? null : source;
         this.maxThrust = maxThrust;
         this.consumption = consumption;

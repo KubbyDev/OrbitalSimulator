@@ -13,11 +13,26 @@ public class CustomForce extends Force {
     /** Adds a custom force to the list of custom forces for this update.
      * @param customForce NOT scaled by deltaTime */
     public void add(Vector3 customForce) { forcesSum.addAltering(customForce); }
+    /** Adds a custom force to the list of custom forces for this update.
+     * @param customForce NOT scaled by deltaTime
+     * @param localPosition point of application of the force relative to the mobile */
+    public void add(Vector3 customForce, Vector3 localPosition) {
+
+        forcesSum.addAltering(customForce);
+
+        //TODO
+
+    }
 
     @Override
     public void apply() {
-        //Application of the force to affect the velocity
-        parentMobile.velocity.addAltering( forcesSum.multiplyAltering(parentMobile.deltaTime()/parentMobile.getMass()) );
-        forcesSum = Vector3.zero();
+
+        if(! forcesSum.equals(Vector3.zero())) {
+            //Application of the force to affect the velocity
+            parentMobile.velocity.addAltering( forcesSum.multiplyAltering(parentMobile.deltaTime()/parentMobile.getMass()) );
+            forcesSum = Vector3.zero();
+        }
+
+        //TODO: Torque
     }
 }

@@ -1,7 +1,5 @@
 package orbitalsimulator.physics.module.modules;
 
-import orbitalsimulator.maths.rotation.Quaternion;
-import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.module.AccessibleField;
 import orbitalsimulator.physics.module.Module;
 
@@ -12,7 +10,6 @@ public class LightSource extends Module {
     public double power;
 
     public LightSource(double intensity) {
-        super(Vector3.zero(), Quaternion.identity());
         this.intensity = intensity;
         this.power = 1;
     }
@@ -26,6 +23,8 @@ public class LightSource extends Module {
 
     @Override
     public void doActions() {
+
+        //TODO: Electric consumption
 
     }
 

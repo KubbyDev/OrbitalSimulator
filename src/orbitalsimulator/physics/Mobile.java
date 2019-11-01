@@ -94,6 +94,15 @@ public class Mobile {
     /** Calculates the mass of the mobile (sum of the masses of the modules */
     public double getMass() { return modules.values().stream().mapToDouble(Module::getMass).sum(); }
 
+    /** Returns the center of mass of the mobile relative to its position */
+    public Vector3 getCenterOfMass() {
+        //Does a weighted average of all the centers of mass of the modules
+        Vector3 sum = Vector3.zero();
+        for(Module module : modules.values())
+            sum.addAltering(module.getCenterOfMass().multiply(module.getMass()));
+        return sum.multiplyAltering(1.0/modules.values().size());
+    }
+
     // Renderer --------------------------------------------------------------------------------------------------------
 
     public ArrayList<Renderer> getRenderers() { return renderers; }

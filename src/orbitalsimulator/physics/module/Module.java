@@ -25,10 +25,11 @@ public abstract class Module {
     protected double mass = 0; //In kg. This field should not be public because there is a getMass function that is overriden by some modules
 
     /** Constructs a module (initialises the accessible fields) */
-    protected Module(Vector3 localPosition, Quaternion localRotation) {
+    protected Module() {
 
-        this.localPosition = localPosition;
-        this.localRotation = localRotation;
+        //These values are initialised by the MobileSave class after instanciation
+        this.localPosition = Vector3.zero();
+        this.localRotation = Quaternion.identity();
 
         //Searches for field with the AccessibleField annotation in the child classes of the module
         //These fields can be modified by the board computer
@@ -50,8 +51,10 @@ public abstract class Module {
     /** Executes the actions of the module (could be anything: produce thrust, do calculations etc) */
     public abstract void doActions();
 
-    /** Returns the mass of the mobile */
+    /** Returns the mass of the module */
     public double getMass() { return mass; }
+    /** Returns the center of mass of the module relative to the mobile position */
+    public Vector3 getCenterOfMass() { return localPosition; }
 
     /** Updates the module (does the actions and verifies the needs) */
     public void update() {

@@ -1,7 +1,5 @@
 package orbitalsimulator.physics.module.modules;
 
-import orbitalsimulator.maths.rotation.Quaternion;
-import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.module.Module;
 import orbitalsimulator.tools.FileUtils;
 
@@ -14,8 +12,8 @@ public class BoardComputer extends Module {
     private LinkedList<String> commands; //A queue of all commands to be executed
     private double waitingTime = 0; //The time left to wait before executing the next command (seconds)
 
+    /** Constructs a BoardComputer */
     public BoardComputer(String program) {
-        super(Vector3.zero(), Quaternion.identity());
         mass = 10;
         //Program compilation
         commands = Arrays.stream(program.split("\n")).collect(Collectors.toCollection(LinkedList::new));
@@ -30,6 +28,8 @@ public class BoardComputer extends Module {
         waitingTime -= parentMobile.deltaTime();
         if(waitingTime > 0)
             return;
+
+        //TODO: Electric consumption
 
         String command = commands.pollFirst();
         while(command != null && !command.equals("") && waitingTime <= 0) {
@@ -49,11 +49,6 @@ public class BoardComputer extends Module {
         }
     }
 
-    /** Builds the Module. The arguments are the ones found in the mobile file
-     * This method is called automaticly by MobileSave
-     * <br> Arguments should be: programPath */
-    public static Module parse(String... args) { return new BoardComputer(FileUtils.readAll(args[0])); }
-
     /** Executes a set command: SET moduleName fieldName value
      * <br> Set the moduleName to self to target the executing module */
     private void executeSet(String[] words) {
@@ -63,4 +58,9 @@ public class BoardComputer extends Module {
 
     /** Executes a wait command: WAIT timeInMs */
     private void executeWait(String[] words) { waitingTime = Double.parseDouble(words[1])/1000; }
+
+    /** Builds the Module. The arguments are the ones found in the mobile file
+     * This method is called automaticly by MobileSave
+     * <br> Arguments should be: programPath */
+    public static Module parse(String... args) { return new BoardComputer(FileUtils.readAll(args[0])); }
 }
