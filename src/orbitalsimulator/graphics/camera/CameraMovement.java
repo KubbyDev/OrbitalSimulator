@@ -7,6 +7,7 @@ import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
 import orbitalsimulator.physics.tools.Time;
 import orbitalsimulator.tools.Input;
+import orbitalsimulator.tools.KeyCode;
 
 import java.util.function.Consumer;
 
@@ -93,11 +94,16 @@ public class CameraMovement {
     /** A cameraRotationUpdater that will let the user control his camera freely */
     public static Consumer<Camera> userControlledRotation() {
         return (Camera camera) -> {
-          Vector2 mouseInput = Input.getMouseMovement();
-          camera.rotation = camera.rotation.multiply(
-                  new EulerAngles(-mouseInput.x(), -mouseInput.y(), 0)
-                          .multiplyAltering(0.5 * Time.lastFrameCalcTime)
-                          .eulerAngles().toQuaternion());
+            //Gets the mouse movement outside the if so the mouse position stored in
+            //the Input class is updated (prevents big turns when the user clicks)
+            Vector2 mouseInput = Input.getMouseMovement();
+            //Moves the rotation only if the right mouse button is pressed
+            if(Input.IsMouseButtonDown(KeyCode.MOUSE_RIGHT)) {
+                camera.rotation = camera.rotation.multiply(
+                        new EulerAngles(-mouseInput.x(), -mouseInput.y(), 0)
+                                .multiplyAltering(2 * Time.lastFrameCalcTime)
+                                .eulerAngles().toQuaternion());
+            }
         };
     }
 }

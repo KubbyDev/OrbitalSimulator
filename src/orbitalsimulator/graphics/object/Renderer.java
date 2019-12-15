@@ -15,8 +15,8 @@ public class Renderer {
     /** The position of the renderer relative to the position of the parent mobile */
     public Vector3 offsetFromMobile;
 
-    private Model[] models; //List of LODs for this object
-    private double[] sqrDistances; //Distance to display each model (squared for performance)
+    protected Model[] models; //List of LODs for this object
+    protected double[] sqrDistances; //Distance to display each model (squared for performance)
 
     /** Constructs a Renderer for a given list of LODs (Level Of Details)
      * <br>The Map should associate a Model to a max distance.

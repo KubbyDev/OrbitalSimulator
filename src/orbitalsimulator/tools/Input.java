@@ -7,6 +7,9 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Input {
 
     private static boolean[] keysDown = new boolean[GLFW.GLFW_KEY_LAST];
@@ -14,11 +17,25 @@ public class Input {
     private static double mouseX = 0;
     private static double mouseY = 0;
 
-    public static void Init() {
+    private static Vector2 previousMousePosition = Vector2.zero();
+    private static HashMap<Integer, Runnable> conditionnalMouseEvents = new HashMap<>();
+    private static HashMap<Integer, Runnable> conditionnalKeyboardEvents = new HashMap<>();
+    private static ArrayList<Runnable> mouseEvents = new ArrayList<>();
+    private static ArrayList<Runnable> keyboardEvents = new ArrayList<>();
+
+    public static void init() {
 
         GLFW.glfwSetKeyCallback(Window.getId(), new GLFWKeyCallback() {
             public void invoke(long window, int key, int scancode, int action, int mods) {
+                //Registers the key press
                 keysDown[key] = (action != GLFW.GLFW_RELEASE);
+                //Calls the events attached to this key
+                if(action != GLFW.GLFW_PRESS) {
+                    for(Runnable event : keyboardEvents)
+                        event.run();
+                    Runnable event = conditionnalKeyboardEvents.get(key);
+                    if(event != null) event.run();
+                }
             }
         });
 
@@ -31,9 +48,35 @@ public class Input {
 
         GLFW.glfwSetMouseButtonCallback(Window.getId(), new GLFWMouseButtonCallback() {
             public void invoke(long window, int button, int action, int mods) {
+                //Registers the button press
                 mouseButtonsDown[button] = (action != GLFW.GLFW_RELEASE);
+                //Calls the events attached to this button
+                if(action != GLFW.GLFW_PRESS) {
+                    for(Runnable event : mouseEvents)
+                        event.run();
+                    Runnable event = conditionnalMouseEvents.get(button);
+                    if(event != null) event.run();
+                }
             }
         });
+    }
+
+    /** Calls the callback function in parameter when the given mouse button is pressed. -1 will call the callback
+     * everytime a mouse button is pressed. */
+    public static void addMouseEvent(int button, Runnable callback) {
+        if(button == -1)
+            mouseEvents.add(callback);
+        else
+            conditionnalMouseEvents.put(button, callback);
+    }
+
+    /** Calls the callback function in parameter when the given key is pressed. -1 will call the callback
+     * everytime a key is pressed. */
+    public static void addKeyboardEvent(int key, Runnable callback) {
+        if(key == -1)
+            keyboardEvents.add(callback);
+        else
+            conditionnalKeyboardEvents.put(key, callback);
     }
 
     /** @param key The code of the key (can be obtained with the KeyCode class)
@@ -66,9 +109,16 @@ public class Input {
 
     /** WARNING: Will set the mouse position to the center of the screen
      * @returns a Vector2 representing the movement of the mouse on the screen since the last call of this function */
-    public static Vector2 getMouseMovement() {
+    public static Vector2 getMouseMovementCentering() {
         Vector2 mousePosition = getMousePositionFromCenter();
         GLFW.glfwSetCursorPos(Window.getId(), (double) Window.getWidth()/2, (double) Window.getHeight()/2);
         return mousePosition;
+    }
+
+    /** @returns a Vector2 representing the movement of the mouse on the screen since the last call of this function */
+    public static Vector2 getMouseMovement() {
+        Vector2 res = getMousePosition().subtractAltering(previousMousePosition);
+        previousMousePosition = getMousePosition();
+        return res;
     }
 }

@@ -3,6 +3,7 @@ package orbitalsimulator;
 import orbitalsimulator.graphics.Window;
 import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.camera.CameraMovement;
+import orbitalsimulator.graphics.ui.UI;
 import orbitalsimulator.maths.Constant;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Physics;
@@ -24,7 +25,8 @@ public class Main {
 
         onCloseEvents = new ArrayList<>();
         Window.open();
-        Input.Init();
+        Input.init();
+        UI.init();
 
         //Loads the scene
         SceneSave.load("TestScene");
@@ -75,6 +77,7 @@ public class Main {
 
         //Screen update
         Scene.getMainCamera().render();
+        UI.display();
         Window.update();
 
         fps++;
