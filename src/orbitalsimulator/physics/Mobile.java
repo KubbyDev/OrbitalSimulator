@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /** A physical object. A Mobile can be displayed and can interact with other mobiles (collisions)
- * It can also contain Modules which can perform actions (emit light, produce thrust etc) */
+ * It can also contain Modules which can perform actions (emit light, produce thrust etc)
+ * A mobile doesn't have a mass. Only modules have mass */
 public class Mobile {
 
     //-- Physical values --

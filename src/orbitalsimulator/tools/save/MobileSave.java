@@ -16,6 +16,7 @@ public class MobileSave {
     // Scene loading ---------------------------------------------------------------------------------------------------
 
     /** Parses mobile data into the given mobile object
+     * Returns the given object (after modification)
      * @see MobileSave#parse(String)  */
     public static Mobile parse(Mobile mobile, String data) {
 
@@ -71,16 +72,42 @@ public class MobileSave {
      * <br> This will display the coffee-maker-LOD1 up to 10m, then coffee-maker-LOD2 up to 50m, then nothing.
      * If you leave the distance blank, it will be infinity */
     public static Mobile parse(String data) {
-        return parse(data.startsWith("Spacebody") ? new Spacebody(1e12) : new Mobile(), data);
+        Mobile mobile;
+        //Special case of space bodies: their save starts with Spacebody mass
+        if(data.startsWith("Spacebody")) {
+            mobile = new Spacebody();
+            data = parseSpacebody((Spacebody) mobile, data);
+        }
+        else
+            mobile = new Mobile();
+        return parse(mobile, data);
     }
     /** Loads a mobile file into a Mobile object
      * @param filePath The path of the file from resources/ */
     public static Mobile load(String filePath) {
+        String data = FileUtils.readAll(filePath);
+        Mobile mobile;
+
+        //Special case of space bodies: their save starts with Spacebody mass
+        if(data.startsWith("Spacebody")) {
+            mobile = new Spacebody();
+            data = parseSpacebody((Spacebody) mobile, data);
+        }
+        else
+            mobile = new Mobile();
+
         //Calls addLoadedElement so the next time FileUtils.loadElement will be called
         //it will not call this function again and get the mobile from cache
-        String data = FileUtils.readAll(filePath);
-        Mobile mobile = data.startsWith("Spacebody") ? new Spacebody(1e12) : new Mobile();
         FileUtils.addLoadedElement("Mobile", filePath, mobile);
+
         return parse(mobile, data);
+    }
+    /** Parses a Spacebody. A spacebody is a mobile with "Spacebody \<mass\>" as first line
+     * Returns the data string without the first line */
+    private static String parseSpacebody(Spacebody sb, String data) {
+        String[] firstLineAndRest = data.split("\n", 2); //Separates the first line and the rest
+        double mass = Double.parseDouble(firstLineAndRest[0].split(" ")[1]);
+        sb.setMass(mass);
+        return firstLineAndRest[1];
     }
 }

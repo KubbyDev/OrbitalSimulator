@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class Camera {
 
     public static final double DEFAULT_NEAR = 0.1;
-    public static final double DEFAULT_FAR = 1000;
+    public static final double DEFAULT_FAR = 10000000;
     public static final double DEFAULT_FOV = 70;
 
     public Vector3 position;
