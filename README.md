@@ -3,6 +3,8 @@ Then the user can launch the mission that will run automatically following the p
 
 During development, every possible upgrade must be taken into account to ease future improvements. For example the function giving the time between 2 physics updates takes into account the space time dilatation even tho it is always 1 for the moment.
 
+The objects in the simulation world are called mobiles. A mobile alone is just a physics object: forces and collisions can act on it etc. Any action done by a mobile is done by its modules. A module has no hitbox and remains at a fixed local position relative to its parent mobile. But it can do things like emitting light, containing fuel, producing thrust, changing values on other modules (e.g turn on an engine).
+
 ### Development progress
 - Maths library (Vectors, Quaternions/EulerAngles and Matrices arithmetics)  
 - Base of the graphics part (3D model rendering, simple lighting)  
@@ -16,5 +18,5 @@ During development, every possible upgrade must be taken into account to ease fu
 
 ### Image
 This image shows a cube orbiting a very heavy Suzanne.
-The cube contains a light source module that is turn on and off every 2 seconds by the board computer.
-![CubeAndSuzanne](https://image.noelshack.com/fichiers/2019/44/5/1572616701-capture.png)
+The cube contains a light source module that is turn on and off every 2 seconds by the board computer module.
+![CubeAndSuzanne](https://imgur.com/bUvoy3c)
