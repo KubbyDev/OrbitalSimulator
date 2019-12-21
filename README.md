@@ -19,4 +19,4 @@ The objects in the simulation world are called mobiles. A mobile alone is just a
 ### Image
 This image shows a cube orbiting a very heavy Suzanne.
 The cube contains a light source module that is turn on and off every 2 seconds by the board computer module.
-![CubeAndSuzanne](https://imgur.com/bUvoy3c)
+![CubeAndSuzanne](https://i.imgur.com/bUvoy3c.png)
