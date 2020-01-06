@@ -1,4 +1,4 @@
-package orbitalsimulator.physics.module.modules;
+package orbitalsimulator.physics.module.modules.battery;
 
 import orbitalsimulator.physics.module.AccessibleField;
 import orbitalsimulator.physics.module.Module;

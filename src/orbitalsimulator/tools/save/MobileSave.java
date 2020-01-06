@@ -36,12 +36,13 @@ public class MobileSave {
 
                 //If it is a module, parses it and adds it to the mobile
                 if(words[0].equals("Module")) {
-                    Class clazz = Class.forName("orbitalsimulator.physics.module.modules." + words[1]);
+                    Class clazz = Class.forName(
+                            "orbitalsimulator.physics.module.modules." + words[1].toLowerCase() + "." + words[1]);
                     Module toAdd = (Module) clazz                            //The class with the specified name
                             .getMethod("parse", String[].class)              //Gets the parse method in the class
                             .invoke(
                                     null,                                    //Invokes it without source (it's static)
-                                    (Object) line.split(" : ")[1].split(" ")   //Takes the part after the : and separates each word
+                                    (Object) line.split(" : ")[1].split(" ") //Takes the part after the : and separates each word
                             );
                     //If the position and rotation were specified, loads it in the module
                     if(!words[3].equals(":")) {

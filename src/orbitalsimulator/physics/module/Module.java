@@ -5,7 +5,7 @@ import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /** Represents a Module (a part of a Mobile)
  * <br> A module can't collide with things, but can do actions (do calculations, produce thrust etc)
@@ -14,8 +14,8 @@ public abstract class Module {
 
     /** The mobile in which this module is contained */
     public Mobile parentMobile;
-    /** The fields that can be modified by the on bord computer (ex: power) */
-    public ArrayList<Field> accessibleFields;
+    /** The fields that can be modified by the on board computer (ex: power) */
+    public HashMap<String, Field> accessibleFields;
     /** The position of the Module relative to the Mobile */
     public Vector3 localPosition;
     /** The rotation of the Module relative to the Mobile */
@@ -33,12 +33,12 @@ public abstract class Module {
 
         //Searches for field with the AccessibleField annotation in the child classes of the module
         //These fields can be modified by the board computer
-        this.accessibleFields = new ArrayList<>();
+        this.accessibleFields = new HashMap<>();
         Class clazz = this.getClass();
         while(clazz != Module.class) {
             for(Field field : clazz.getDeclaredFields())
                 if(field.isAnnotationPresent(AccessibleField.class))
-                    accessibleFields.add(field);
+                    accessibleFields.put(field.getName(), field);
             clazz = clazz.getSuperclass();
         }
     }
@@ -73,12 +73,7 @@ public abstract class Module {
     public void updateField(String fieldName, String value) {
 
         //Searches for the corresponding field in the accessible fields (calculated in the contructor)
-        Field field = null;
-        for(Field f : accessibleFields)
-            if(f.getName().equals(fieldName)) {
-                field = f;
-                break;
-            }
+        Field field = accessibleFields.get(fieldName);
 
         //If the field has not been found
         if(field == null)

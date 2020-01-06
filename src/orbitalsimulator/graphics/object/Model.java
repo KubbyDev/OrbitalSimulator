@@ -5,7 +5,7 @@ import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.maths.matrix.Matrix3;
 import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.physics.Mobile;
-import orbitalsimulator.physics.module.modules.LightSource;
+import orbitalsimulator.physics.module.modules.lightsource.LightSource;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;

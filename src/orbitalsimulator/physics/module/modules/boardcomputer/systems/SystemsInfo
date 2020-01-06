@@ -1,0 +1,24 @@
+Systems are ways to create more complicated programs for the board computer to execute.
+To create a system, create a new class in this package and make it extend ComputerSystem.
+
+Then you can create methods. To create a method callable by the computer, make it public void with String[] as parameter
+Don't forget to mark it with the SystemMethod annotation
+
+package orbitalsimulator.physics.module.modules.boardcomputer.systems;
+import orbitalsimulator.physics.module.modules.boardcomputer.ComputerSystem;
+import orbitalsimulator.physics.module.modules.boardcomputer.SystemMethod;
+public class TEST extends ComputerSystem {
+    @SystemMethod
+    public void test(String... args) {
+        System.out.println("System Call: " + args[0]);
+    }
+}
+
+And that's it!
+To call your method in the computer program, juste write SystemName MethodName Parameter1 Parameter2 ...
+For this example: TEST test hello
+
+Additionnal information:
+You can create helper methods that can't be accessed by the computer, just don't mark them with SystemMethod
+You can access the BoardComputer object that holds your system with this.parentComputer
+Each board computer has an instance of your system, so they work independently

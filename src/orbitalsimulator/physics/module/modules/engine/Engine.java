@@ -1,10 +1,10 @@
-package orbitalsimulator.physics.module.modules;
+package orbitalsimulator.physics.module.modules.engine;
 
 import orbitalsimulator.maths.rotation.EulerAngles;
-import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.module.AccessibleField;
 import orbitalsimulator.physics.module.Module;
+import orbitalsimulator.physics.module.modules.fueltank.FuelTank;
 
 /** An engine module. You can adjust the power and the orientation of the thrust */
 public class Engine extends Module {

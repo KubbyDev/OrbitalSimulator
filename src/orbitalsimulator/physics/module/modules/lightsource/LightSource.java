@@ -1,4 +1,4 @@
-package orbitalsimulator.physics.module.modules;
+package orbitalsimulator.physics.module.modules.lightsource;
 
 import orbitalsimulator.physics.module.AccessibleField;
 import orbitalsimulator.physics.module.Module;

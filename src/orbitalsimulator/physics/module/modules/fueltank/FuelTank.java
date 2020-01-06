@@ -1,4 +1,4 @@
-package orbitalsimulator.physics.module.modules;
+package orbitalsimulator.physics.module.modules.fueltank;
 
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.module.AccessibleField;

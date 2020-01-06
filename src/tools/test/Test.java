@@ -1,10 +1,5 @@
 package tools.test;
 
-import orbitalsimulator.maths.vector.*;
-import orbitalsimulator.maths.rotation.*;
-import orbitalsimulator.maths.matrix.*;
-import orbitalsimulator.maths.*;
-
 import java.math.BigDecimal;
 
 public class Test {

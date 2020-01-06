@@ -7,7 +7,7 @@ import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.physics.forces.CustomForce;
 import orbitalsimulator.physics.forces.Force;
 import orbitalsimulator.physics.forces.NewtonianGravity;
-import orbitalsimulator.physics.module.modules.LightSource;
+import orbitalsimulator.physics.module.modules.lightsource.LightSource;
 import orbitalsimulator.physics.tools.Time;
 import orbitalsimulator.physics.module.Module;
 

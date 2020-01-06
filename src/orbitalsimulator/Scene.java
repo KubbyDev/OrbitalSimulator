@@ -5,7 +5,7 @@ import orbitalsimulator.graphics.object.Renderer;
 import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
 import orbitalsimulator.physics.Mobile;
-import orbitalsimulator.physics.module.modules.LightSource;
+import orbitalsimulator.physics.module.modules.lightsource.LightSource;
 import orbitalsimulator.physics.spacebody.Spacebody;
 
 import java.util.ArrayList;
@@ -24,9 +24,12 @@ public class Scene {
     }
 
     /** Adds a mobile to the scene */
-    public static void addMobile(Mobile mobile, Vector3 position, Quaternion rotation) {
+    public static void addMobile(Mobile mobile, Vector3 position, Quaternion rotation,
+                                 Vector3 velocity, Quaternion angularVelocity) {
         mobile.position = position;
         mobile.rotation = rotation;
+        mobile.velocity = velocity;
+        mobile.angularVelocity = angularVelocity;
         addMobile(mobile);
     }
 
