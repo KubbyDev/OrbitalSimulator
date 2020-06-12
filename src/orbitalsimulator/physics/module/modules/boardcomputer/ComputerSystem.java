@@ -3,7 +3,9 @@ package orbitalsimulator.physics.module.modules.boardcomputer;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-/** Base class of all the Systems */
+/** Base class of all the Systems
+ * <br> A system is a Java class that can be used by the board computer to perform complex operations.
+ * It's better for performance and allows more things to be done */
 public abstract class ComputerSystem {
 
     private HashMap<String, Method> methods = new HashMap<>(); //Lists all the methods of the system
@@ -32,4 +34,7 @@ public abstract class ComputerSystem {
             methods.get(method).invoke(this, args);
         } catch (Exception e) { Systems.throwException(name, method, (String[]) args, e); }
     }
+
+    /** Override this method to update your system at each update of the computer */
+    public void update() {}
 }

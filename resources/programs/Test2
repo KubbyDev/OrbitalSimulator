@@ -1,0 +1,11 @@
+SET Light power 1
+
+WAIT 3000
+
+SET Engine power 1
+SET Light power 0
+
+WAIT 3000
+
+SET Engine power 0
+SET Light power 1

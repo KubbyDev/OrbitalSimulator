@@ -14,9 +14,11 @@ public class MathTest {
         System.out.print("Euler angles (degrees): "); ea.display(Unit.DEGREES, 1);
         Quaternion q = ea.toQuaternion();
         System.out.print("Conversion to quaternion: "); q.display(2);
-        EulerAngles ea_conv = q.toEulerAngles();
+        Quaternion q2 = q.multiply(new EulerAngles(0,-10,0,Unit.DEGREES).toQuaternion());
+        System.out.print("Added -10 degrees pitch: "); q2.display(2);
+        EulerAngles ea_conv = q2.toEulerAngles();
         System.out.print("Conversion to euler angles from quaternion: "); ea_conv.display(Unit.DEGREES, 1);
-        if(!ea.equals(ea_conv, 0.00001)) throw new RuntimeException();
+        if(!ea.equals(ea_conv.addAltering(new EulerAngles(0,-10,0,Unit.DEGREES)), 0.00001)) throw new RuntimeException();
 
 
         System.out.println("\n");

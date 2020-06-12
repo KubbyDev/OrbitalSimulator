@@ -23,3 +23,15 @@ UI de gestion du multiplicateur de temps
     A ne pas oublier
 
 Optimiser le rendu multi model
+
+
+
+
+
+
+EulerAngles#fromQuaternion
+Camera projection matrix
+
+Quaternion#lookAt => pourquoi pas utiliser Quaternion(axis, angle) ?
+Mettre des final dans certaines fonctions de classes de base (Vector, Matrix etc)
+Peut etre enlever le conjugate dans Model#getViewMatrix

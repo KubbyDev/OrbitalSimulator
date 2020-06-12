@@ -4,7 +4,12 @@ import orbitalsimulator.maths.rotation.EulerAngles;
 import orbitalsimulator.maths.rotation.Quaternion;
 
 /** A Vector limited to 3 values
- * <br><br> Contains some functions that can be executed only with 3D vectors
+ * <br>
+ * <br> Contains some functions that can be executed only with 3D vectors
+ * <br>
+ * <br> The X axis goes to the right
+ * <br> The Y axis goes up
+ * <br> The Z axis goes backward
  * @see Vector */
 public class Vector3 extends Vector {
 

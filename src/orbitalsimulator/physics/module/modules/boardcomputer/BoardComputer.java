@@ -24,6 +24,8 @@ public class BoardComputer extends Module {
     @Override
     public void doActions() {
 
+        systems.update();
+
         waitingTime -= parentMobile.deltaTime();
         if(waitingTime > 0)
             return;

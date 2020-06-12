@@ -1,16 +1,42 @@
-
 TEST test hello
 
+WAIT 5000
+
+SAS setEnabled TRUE
+SAS reorient 45 0 0
 SET Light power 1
+
 WAIT 2000
+
+SAS setEnabled FALSE
 SET Light power 0
+
 WAIT 2000
+
+SAS setEnabled TRUE
+SAS reorient 90 0 0
 SET Light power 1
+
 WAIT 2000
+
+SAS setEnabled FALSE
 SET Light power 0
+
 WAIT 2000
+
+SAS setEnabled TRUE
+SAS reorient 180 0 0
 SET Light power 1
+
 WAIT 2000
+
+SAS setEnabled FALSE
 SET Light power 0
+
 WAIT 2000
+
+SAS setEnabled TRUE
+SAS reorient 45 0 0
 SET Light power 1
+
+

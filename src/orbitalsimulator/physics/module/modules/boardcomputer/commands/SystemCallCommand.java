@@ -7,13 +7,19 @@ import orbitalsimulator.physics.module.modules.boardcomputer.ComputerSystem;
 
 import java.util.Arrays;
 
+/** Calls the desired method in the desired System
+ * <br> Syntax: SystemName SystemMethod argument1 argument2 ...
+ * <br>
+ * <br> If you want to call a system method from another system,
+ * do it without using a command, it's better for performance:
+ * <br> ((SystemName)parentComputer.systems.find("SystemName")).methodName(arguments)*/
 public class SystemCallCommand extends Command {
 
     private ComputerSystem system;
     private String systemMethod;
     private Object args;
 
-    /** Executes a system call command: SystemName SystemMethod argument1 argument2 ... */
+    /** Executes this system call command */
     @Override
     public void execute() {
         system.callMethod(systemMethod, args);

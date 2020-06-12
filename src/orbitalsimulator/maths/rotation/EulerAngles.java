@@ -37,7 +37,7 @@ public class EulerAngles extends Vector {
         return this;
     }
 
-    /** Constructs an EulerAngles rotation from the 3 angles
+    /** Constructs an EulerAngles rotation from the 3 angles in radians
      * @param yaw rotation around the up axis
      * @param pitch rotation around the right axis
      * @param roll rotation around the forward axis */

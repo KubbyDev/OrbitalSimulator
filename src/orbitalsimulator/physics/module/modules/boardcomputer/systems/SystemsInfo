@@ -22,3 +22,4 @@ Additionnal information:
 You can create helper methods that can't be accessed by the computer, just don't mark them with SystemMethod
 You can access the BoardComputer object that holds your system with this.parentComputer
 Each board computer has an instance of your system, so they work independently
+You can override update() to update your system at each update of the parent computer

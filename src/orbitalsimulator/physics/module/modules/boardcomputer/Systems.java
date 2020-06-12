@@ -33,6 +33,12 @@ public class Systems {
 
     public ComputerSystem find(String system) { return systems.get(system); }
 
+    /** Updates all the systems */
+    public void update() {
+        for(ComputerSystem system : systems.values())
+            system.update();
+    }
+
     public static void throwException(String systemName, String systemMethod, String[] args, Exception cause) throws RuntimeException {
         StringBuilder message = new StringBuilder("Error while executing system " + systemName + ", method " + systemMethod
                 + "\nCommand: " + systemName + " " + systemMethod + " ");

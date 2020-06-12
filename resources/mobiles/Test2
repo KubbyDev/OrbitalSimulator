@@ -1,5 +1,5 @@
 Module LightSource Light : 15
-Module BoardComputer Compy : programs/Test
-Module Engine Engine : 1000 100 700 Fuel
-Module FuelTank Fuel : 100 null
+Module BoardComputer Compy : programs/SimpleOrbit
+Module Engine Engine : 5000 100 700 Fuel
+Module FuelTank Fuel : 1000 null
 Model models/SmallCube

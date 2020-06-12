@@ -5,6 +5,7 @@ import orbitalsimulator.graphics.camera.Camera;
 import orbitalsimulator.graphics.camera.CameraMovement;
 import orbitalsimulator.graphics.ui.UI;
 import orbitalsimulator.physics.Physics;
+import orbitalsimulator.physics.tools.OrbitalInfos;
 import orbitalsimulator.physics.tools.Time;
 import orbitalsimulator.tools.Input;
 import orbitalsimulator.tools.save.SceneSave;
@@ -82,6 +83,10 @@ public class Main {
             System.out.println(fps);
             time = System.currentTimeMillis();
             fps = 0;
+
+            double[] ap = OrbitalInfos.getApoapsisPeriapsis(Scene.getMobiles().get(1), Scene.getMobiles().get(0));
+            System.out.println("Apoapsis: " + ap[0]);
+            System.out.println("Periapsis: " + ap[1]);
         }
     }
 
