@@ -30,12 +30,10 @@ public class Main {
         SceneSave.load("TestScene");
 
         //Sets the camera movement rules
-        Scene.getMainCamera().cameraPositionUpdater = CameraMovement.lockTo3rdPerson(Scene.getMobiles().get(0), 5);
-        Scene.getMainCamera().cameraRotationUpdater = CameraMovement.userControlledRotation();
-
-        //Scene.getMainCamera().cameraPositionUpdater = CameraMovement.straightUniform(Vector3.right().multiply(20));
-        //Scene.getMainCamera().cameraPositionUpdater = CameraMovement.rotateAround(Scene.getMobiles().get(0), 5, 2);
-        //Scene.getMainCamera().cameraRotationUpdater = CameraMovement.lockRotationOn(Scene.getMobiles().get(0));
+        Scene.getMainCamera().changeMovementRules(
+                CameraMovement.userControlledRotation(),
+                CameraMovement.lockTo3rdPerson(Scene.getMobiles().get(0), 5)
+        );
 
         //TODO: Trouver une solution pour ca
         //Scene.getMainCamera().position = Vector3.forward().rotateAltering(Scene.getMobiles().get(0).rotation).getPerpendicular().setLengthAltering(5).addAltering(Scene.getMobiles().get(0).position).addAltering(Vector3.zero());

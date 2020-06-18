@@ -8,6 +8,8 @@ import orbitalsimulator.maths.matrix.Matrix4;
 import orbitalsimulator.maths.rotation.Quaternion;
 import orbitalsimulator.maths.vector.Vector3;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class Camera {
@@ -20,19 +22,13 @@ public class Camera {
     public Quaternion rotation;
     public Shader shader;
 
-    /** Use this function to control the camera position.
-     * <br> It should only change the camera.position, but you can access any information in the camera
+    /** Use this list of functions to control the camera position and rotation.
      * <br> Don't forget to scale the movements you apply by Time.lastFrameCalcTime (this function is called once per frame)
      * <br><br> You can find predefined functions in the class CameraMovement */
-    public Consumer<Camera> cameraPositionUpdater;
-    /** Use this function to control the camera rotation.
-     * <br> It should only change the camera.rotation, but you can access any information in the camera
-     * <br> Don't forget to scale the rotations you apply by Time.lastFrameCalcTime (this function is called once per frame)
-     * <br><br> You can find predefined functions in the class CameraMovement */
-    public Consumer<Camera> cameraRotationUpdater;
+    public ArrayList<Consumer<Camera>> movementRules;
 
     //Used during render
-    private Matrix4 projectionMatrix;
+    private final Matrix4 projectionMatrix;
 
     /** Constructs a Camera with default settings */
     public Camera() { this(Vector3.zero(), Quaternion.identity()); }
@@ -42,15 +38,13 @@ public class Camera {
         this.position = position;
         this.rotation = rotation;
         shader = Shader.DEFAULT;
-        cameraPositionUpdater = CameraMovement.immobile();
-        cameraRotationUpdater = CameraMovement.immobile();
+        changeMovementRules(CameraMovement.immobile());
 
         //Precalculates the projection matrix (used during render)
-        double fov = DEFAULT_FOV;
         double near = DEFAULT_NEAR;
         double far = DEFAULT_FAR;
         double aspect = (double) Window.getWidth() / Window.getHeight();
-        double tanFOV = Math.tan(fov*Constant.TO_RADIANS/2);
+        double tanFOV = Math.tan(DEFAULT_FOV *Constant.TO_RADIANS/2);
         double range = far - near;
         projectionMatrix = new Matrix4()
                 .set(0, 0, 1.0 / (aspect * tanFOV))
@@ -68,11 +62,18 @@ public class Camera {
     }
 
     /** Updates the position and the rotation of the camera
-     * @see Camera#cameraPositionUpdater
-     * @see Camera#cameraRotationUpdater */
+     * @see Camera#movementRules
+     * @see Camera#changeMovementRules */
     public void update() {
-        cameraPositionUpdater.accept(this);
-        cameraRotationUpdater.accept(this);
+        for(Consumer<Camera> rule : movementRules)
+            rule.accept(this);
+    }
+
+    /** Changes the movement rules of this camera. Erases the proviously established rules
+     * @see Camera#movementRules */
+    @SafeVarargs
+    public final void changeMovementRules(Consumer<Camera>... rules) {
+        this.movementRules = new ArrayList<>(Arrays.asList(rules));
     }
 
     /** @return the projection matrix of this camera. Used during render */

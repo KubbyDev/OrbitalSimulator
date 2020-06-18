@@ -11,10 +11,10 @@ import orbitalsimulator.tools.KeyCode;
 
 import java.util.function.Consumer;
 
-/** This class generously provides some camera(Position/Rotation)Updaters */
+/** This class generously provides some camera movement rules */
 public class CameraMovement {
 
-    /** Does nothing. <br> Can be used as cameraPositionUpdater or as CameraRotationUpdater */
+    /** Does nothing */
     public static Consumer<Camera> immobile() { return (Camera) -> {}; }
 
     // Position updaters -----------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ public class CameraMovement {
             if(Input.IsMouseButtonDown(KeyCode.MOUSE_RIGHT)) {
                 camera.rotation = camera.rotation.multiply(
                         new EulerAngles(-mouseInput.x(), -mouseInput.y(), 0)
-                                .multiplyAltering(2 * Time.lastFrameCalcTime)
+                                .multiplyAltering(0.5 * Time.lastFrameCalcTime)
                                 .eulerAngles().toQuaternion());
             }
         };

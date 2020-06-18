@@ -103,8 +103,8 @@ public class MobileSave {
 
         return parse(mobile, data);
     }
-    /** Parses a Spacebody. A spacebody is a mobile with "Spacebody \<mass\>" as first line
-     * Returns the data string without the first line */
+    /** Parses a Spacebody. A spacebody is a mobile with "Spacebody &lt;mass&gt;" as first line
+     * <br> Returns the data string without the first line */
     private static String parseSpacebody(Spacebody sb, String data) {
         String[] firstLineAndRest = data.split("\n", 2); //Separates the first line and the rest
         double mass = Double.parseDouble(firstLineAndRest[0].split(" ")[1]);
